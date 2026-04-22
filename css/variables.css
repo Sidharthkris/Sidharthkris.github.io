@@ -1,0 +1,168 @@
+/* ═══════════════════════════════════════════════════════════════
+   variables.css — Design tokens, reset and base typography
+   Part of a three-file CSS architecture:
+     variables.css  → tokens, reset, base, typography
+     layout.css     → structural utilities and responsive breakpoints
+     components.css → all UI component styles
+═══════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────
+   1. DESIGN TOKENS
+   Single source of truth for all colours, spacing,
+   radii, shadows and motion values. All component
+   styles reference these variables — never raw values.
+───────────────────────────────────────── */
+:root {
+  /* Palette — light mode */
+  --color-bg:          #f5f2ec;
+  --color-bg-alt:      #eeeae2;
+  --color-surface:     #ffffff;
+  --color-ink:         #1a1916;
+  --color-ink-2:       #4a4740;
+  --color-ink-3:       #9a9790;
+  --color-accent:      #b84030;
+  --color-accent-soft: rgba(184, 64, 48, 0.08);
+  --color-accent-mid:  rgba(184, 64, 48, 0.22);
+  --color-border:      rgba(26, 25, 22, 0.1);
+  --color-border-soft: rgba(26, 25, 22, 0.05);
+
+  /* Typography */
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body:    'Figtree', system-ui, sans-serif;
+
+  /* Spacing scale (8-pt base) */
+  --space-1:  0.25rem;
+  --space-2:  0.5rem;
+  --space-3:  0.75rem;
+  --space-4:  1rem;
+  --space-6:  1.5rem;
+  --space-8:  2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-24: 6rem;
+
+  /* Layout */
+  --container-max: 1160px;
+  --container-pad: clamp(1.25rem, 5vw, 2.5rem);
+  --nav-height:    64px;
+  --radius:        12px;
+  --radius-sm:     6px;
+  --radius-pill:   999px;
+
+  /* Motion */
+  --ease-out:    cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* Elevation shadows */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.09), 0 1px 4px rgba(0,0,0,0.06);
+  --shadow-lg: 0 12px 48px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* Dark mode — overrides light palette only.
+   All other tokens (spacing, radii, motion) remain unchanged. */
+[data-theme="dark"] {
+  --color-bg:          #111009;
+  --color-bg-alt:      #181612;
+  --color-surface:     #1e1c18;
+  --color-ink:         #f0ece3;
+  --color-ink-2:       #b0ada6;
+  --color-ink-3:       #6a6760;
+  --color-accent:      #e05540;
+  --color-accent-soft: rgba(224, 85, 64, 0.1);
+  --color-accent-mid:  rgba(224, 85, 64, 0.25);
+  --color-border:      rgba(240, 236, 227, 0.1);
+  --color-border-soft: rgba(240, 236, 227, 0.05);
+
+  /* Deepen shadows to account for dark canvas */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.25);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.35);
+  --shadow-lg: 0 12px 48px rgba(0,0,0,0.55);
+}
+
+/* ─────────────────────────────────────────
+   2. RESET & BASE
+   Minimal opinionated reset — normalises box model,
+   removes default margins/padding, sets global defaults.
+───────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.65;
+  /* Smooth theme transitions — applied only to background/color
+     to avoid inadvertently delaying layout-affecting properties */
+  transition: background-color 0.4s, color 0.4s;
+  overflow-x: hidden;
+}
+
+img, svg, video { display: block; max-width: 100%; }
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+  background: none;
+}
+
+/* Suppress list markers on semantic lists that use role="list"
+   (these are styled explicitly in components) */
+ul[role="list"],
+ol[role="list"] { list-style: none; }
+
+/* Visible focus ring — uses accent colour so it's always visible
+   regardless of the surrounding context */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* Selection highlight matches brand accent */
+::selection {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+/* Custom scrollbar — WebKit only, degrades gracefully in Firefox */
+::-webkit-scrollbar       { width: 5px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb { background: var(--color-accent); border-radius: 3px; }
+
+/* ─────────────────────────────────────────
+   3. TYPOGRAPHY SCALE
+   Display headings use Fraunces (optical serif).
+   Body/UI copy uses Figtree (geometric sans).
+   Sizes are set in components — this block
+   sets only shared type properties.
+───────────────────────────────────────── */
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--color-ink);
+}
+
+p { color: var(--color-ink-2); }
+p + p { margin-top: var(--space-4); }
+
+strong { color: var(--color-ink); font-weight: 600; }

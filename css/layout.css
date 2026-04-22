@@ -1,0 +1,119 @@
+/* ═══════════════════════════════════════════════════════════════
+   layout.css — Structural layout utilities and responsive breakpoints
+   Depends on: variables.css
+═══════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────
+   4. LAYOUT UTILITIES
+   Container, section wrapper, and section
+   header used by every content section.
+───────────────────────────────────────── */
+
+/* Centred, max-width content column.
+   padding-inline uses a clamp so it scales
+   fluidly from mobile to desktop. */
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--container-pad);
+}
+
+/* Consistent vertical rhythm between sections */
+.section { padding-block: clamp(4rem, 10vw, 7rem); }
+
+/* Section heading row — number badge + title sit on a shared baseline */
+.section__header {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-4);
+  margin-bottom: clamp(2.5rem, 6vw, 4rem);
+}
+
+/* Mono-spaced ordinal counter (01, 02, 03 …) */
+.section__number {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  padding-top: 0.3em; /* optical alignment with display heading */
+}
+
+/* Section title — fluid size so it never wraps awkwardly */
+.section__title {
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+/* ─────────────────────────────────────────
+   5. SCROLL REVEAL SYSTEM
+   Elements with .js-reveal start hidden and
+   transition in when JavaScript adds .is-visible.
+   The CSS custom property --delay lets each
+   element stagger independently via inline style.
+───────────────────────────────────────── */
+.js-reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition:
+    opacity   0.75s var(--ease-out),
+    transform 0.75s var(--ease-out);
+  transition-delay: var(--delay, 0s);
+}
+
+.js-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─────────────────────────────────────────
+   14. RESPONSIVE BREAKPOINTS
+   Named breakpoints keep media queries scannable.
+   Each block overrides only what changes at that
+   viewport width — no full-component restates.
+───────────────────────────────────────── */
+
+/* Tablet — ≤ 900px
+   Collapses multi-column grids to single column;
+   replaces desktop nav with hamburger menu. */
+@media (max-width: 900px) {
+  .nav__links    { display: none; }
+  .nav__hamburger { display: flex; }
+
+  .about__grid   { grid-template-columns: 1fr; }
+  .stats-row     { grid-template-columns: repeat(3, 1fr); }
+  .projects-grid { grid-template-columns: 1fr; }
+  .contact__grid { grid-template-columns: 1fr; }
+  .site-footer__inner { flex-direction: column; text-align: center; }
+}
+
+/* Mobile — ≤ 600px
+   Further simplifies hero typography and
+   single-column stat layout. */
+@media (max-width: 600px) {
+  .hero__name            { font-size: clamp(3rem, 14vw, 5rem); }
+  .hero__scroll-indicator { display: none; }
+  .stats-row             { grid-template-columns: 1fr; }
+  .hero__cta-group       { flex-direction: column; }
+  .btn                   { justify-content: center; }
+  .about__detail-row     { grid-template-columns: 1fr; gap: var(--space-1); }
+}
+
+/* Wide screens — ≥ 1400px
+   Increases max content width for large displays. */
+@media (min-width: 1400px) {
+  :root { --container-max: 1320px; }
+}
+
+/* Reduced motion — honours OS/browser accessibility preference.
+   Collapses all animations to near-instant so nothing distracts
+   or triggers motion-sensitive users. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration:        0.01ms !important;
+    transition-duration:       0.01ms !important;
+    animation-iteration-count: 1     !important;
+  }
+  html { scroll-behavior: auto; }
+}
