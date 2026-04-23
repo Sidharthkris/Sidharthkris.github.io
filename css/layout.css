@@ -22,6 +22,15 @@
 /* Consistent vertical rhythm between sections */
 .section { padding-block: clamp(4rem, 10vw, 7rem); }
 
+/* scroll-margin-top offsets every section by the fixed nav height plus
+   a small breathing gap. This ensures anchor links, deep-linked URLs,
+   and browser find-in-page all land correctly without the heading being
+   hidden behind the nav — a CSS-native complement to the JS SmoothScroll
+   module, covering cases where JS has not yet run or is disabled. */
+section[id] {
+  scroll-margin-top: calc(var(--nav-height) + 16px);
+}
+
 /* Section heading row — number badge + title sit on a shared baseline */
 .section__header {
   display: flex;
@@ -68,7 +77,7 @@
 }
 
 /* ─────────────────────────────────────────
-   14. RESPONSIVE BREAKPOINTS
+   6. RESPONSIVE BREAKPOINTS
    Named breakpoints keep media queries scannable.
    Each block overrides only what changes at that
    viewport width — no full-component restates.
@@ -78,26 +87,38 @@
    Collapses multi-column grids to single column;
    replaces desktop nav with hamburger menu. */
 @media (max-width: 900px) {
-  .nav__links    { display: none; }
+  .nav__links     { display: none; }
   .nav__hamburger { display: flex; }
 
-  .about__grid   { grid-template-columns: 1fr; }
-  .stats-row     { grid-template-columns: repeat(3, 1fr); }
-  .projects-grid { grid-template-columns: 1fr; }
-  .contact__grid { grid-template-columns: 1fr; }
+  .about__grid    { grid-template-columns: 1fr; }
+  .stats-row      { grid-template-columns: repeat(3, 1fr); }
+  .projects-grid  { grid-template-columns: 1fr; }
+  .contact__grid  { grid-template-columns: 1fr; }
   .site-footer__inner { flex-direction: column; text-align: center; }
+}
+
+/* Intermediate — ≤ 768px
+   Addresses the gap between the 900px tablet breakpoint and the 600px
+   mobile breakpoint. At ~768px (portrait tablet, large landscape phone)
+   the stats row and contact lead can look cramped without intervention. */
+@media (max-width: 768px) {
+  /* Give stat cells more vertical breathing room before full collapse */
+  .stat { padding: var(--space-6) var(--space-4); }
+
+  /* Slightly reduce the italic lead copy size at this width */
+  .contact__lead { font-size: clamp(1.25rem, 4vw, 1.75rem); }
 }
 
 /* Mobile — ≤ 600px
    Further simplifies hero typography and
    single-column stat layout. */
 @media (max-width: 600px) {
-  .hero__name            { font-size: clamp(3rem, 14vw, 5rem); }
+  .hero__name             { font-size: clamp(3rem, 14vw, 5rem); }
   .hero__scroll-indicator { display: none; }
-  .stats-row             { grid-template-columns: 1fr; }
-  .hero__cta-group       { flex-direction: column; }
-  .btn                   { justify-content: center; }
-  .about__detail-row     { grid-template-columns: 1fr; gap: var(--space-1); }
+  .stats-row              { grid-template-columns: 1fr; }
+  .hero__cta-group        { flex-direction: column; }
+  .btn                    { justify-content: center; }
+  .about__detail-row      { grid-template-columns: 1fr; gap: var(--space-1); }
 }
 
 /* Wide screens — ≥ 1400px
@@ -108,7 +129,9 @@
 
 /* Reduced motion — honours OS/browser accessibility preference.
    Collapses all animations to near-instant so nothing distracts
-   or triggers motion-sensitive users. */
+   or triggers motion-sensitive users.
+   Note: window.scrollTo({ behavior: 'smooth' }) is handled separately
+   in SmoothScroll (main.js) via the prefers-reduced-motion media query. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration:        0.01ms !important;
