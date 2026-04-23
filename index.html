@@ -28,26 +28,27 @@
   <meta name="twitter:image"       content="https://sidharthkris.github.io/assets/og-image.png" />
 
   <!-- ─── Browser / PWA chrome ────────────── -->
-  <!-- Matches terracotta accent colour defined in CSS variables -->
   <meta name="theme-color" content="#b84030" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#e05540" media="(prefers-color-scheme: dark)" />
+
+  <!-- ─── Favicon ──────────────────────────
+    Inline SVG data URI — zero additional HTTP requests.
+    Uses the brand terracotta accent colour.
+    Replace with a proper /assets/favicon.png if you add one.
+  ─────────────────────────────────────────── -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23b84030'/><text y='.875em' font-size='62' font-family='Georgia,serif' font-weight='700' fill='%23fff' x='50%25' text-anchor='middle'>S</text></svg>" />
 
   <!-- ─── Content Security Policy ─────────── -->
   <!--
     Restricts resource origins to reduce XSS surface area.
-    Permits:
-      • default-src 'self'          — all resources default to same origin
-      • script-src  'self'          — scripts only from own domain (module defers safely)
-      • style-src   'self' + fonts  — stylesheets + Google Fonts CSS
-      • font-src    fonts.gstatic.com — Fraunces and Figtree font files
-      • img-src     'self' data:    — local images + inline data URIs (hero grain texture)
-      • connect-src 'self'          — no external API calls
-    Adjust if you add analytics or a CDN later.
+    NOTE: frame-ancestors is silently ignored when delivered via <meta>
+    (GitHub Pages limitation). Migrate to Netlify/Cloudflare Pages for
+    full HTTP-header CSP support including frame-ancestors and X-Frame-Options.
   -->
   <meta http-equiv="Content-Security-Policy"
         content="default-src 'self';
                  script-src  'self';
-                 style-src   'self' https://fonts.googleapis.com;
+                 style-src   'self' https://fonts.googleapis.com 'unsafe-inline';
                  font-src    https://fonts.gstatic.com;
                  img-src     'self' data:;
                  connect-src 'self';" />
@@ -56,30 +57,54 @@
 
   <!-- ─── Fonts ────────────────────────────── -->
   <!--
-    preconnect hints open TCP+TLS to Google's font servers early
-    so the actual stylesheet request lands into an established connection.
+    Two preconnect hints warm TCP+TLS to Google's font servers early.
+    The font stylesheet is loaded via rel="preload" + onload so it is
+    completely non-blocking (no impact on FCP / LCP).
+    The <noscript> fallback covers JS-disabled environments.
   -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
+    rel="preload"
+    as="style"
     href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,700;1,9..144,300;1,9..144,700&family=Figtree:wght@300;400;500;600&display=swap"
-    rel="stylesheet"
+    onload="this.onload=null;this.rel='stylesheet'"
   />
+  <noscript>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,700;1,9..144,300;1,9..144,700&family=Figtree:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </noscript>
 
   <!-- ─── Stylesheets (load order matters) ─── -->
   <!--
+    preload hints let the browser discover all three files in parallel
+    during the initial HTML parse, before the parser reaches the <link>
+    tags. This eliminates the sequential waterfall on first/cold load.
+
     1. variables.css — design tokens, reset, base typography
     2. layout.css    — container, section utilities, scroll reveal, breakpoints
     3. components.css — all UI component styles
-    Split from a single monolith for maintainability;
-    browser caches each file independently.
   -->
+  <link rel="preload" href="css/variables.css" as="style" />
+  <link rel="preload" href="css/layout.css"    as="style" />
+  <link rel="preload" href="css/components.css" as="style" />
+
   <link rel="stylesheet" href="css/variables.css" />
   <link rel="stylesheet" href="css/layout.css" />
   <link rel="stylesheet" href="css/components.css" />
 </head>
 
 <body>
+
+  <!-- ═══════════════════════════════════════
+       SKIP LINK — WCAG 2.1 SC 2.4.1 (Level A)
+       Must be the very first focusable element in the document.
+       Styled in components.css (.skip-link). Appears on keyboard
+       focus, allowing users to jump past repeated navigation.
+  ═══════════════════════════════════════ -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
 
   <!-- ═══════════════════════════════════════
        NAVIGATION
@@ -96,10 +121,16 @@
       </ul>
 
       <div class="nav__actions">
+        <!--
+          aria-pressed reflects the current toggle state (dark = pressed).
+          aria-label describes the *action* (what will happen on click).
+          Both are updated programmatically by ThemeManager.apply() in main.js.
+        -->
         <button
           class="theme-toggle"
           id="themeToggle"
-          aria-label="Toggle dark mode"
+          aria-label="Switch to dark mode"
+          aria-pressed="false"
           title="Toggle dark mode"
         >
           <svg class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -219,7 +250,6 @@
           <aside class="about__stack js-reveal" aria-label="Technology stack">
             <h3 class="about__stack-title">Tech Stack</h3>
             <ul class="stack-grid" role="list">
-              <!-- Languages — evidenced across all roles and academic projects -->
               <li class="stack-item">Java</li>
               <li class="stack-item">Python</li>
               <li class="stack-item">JavaScript</li>
@@ -228,34 +258,27 @@
               <li class="stack-item">HTML5 / CSS3</li>
               <li class="stack-item">ASP.NET</li>
               <li class="stack-item">NetLogo</li>
-              <!-- Simulation & AI — M.Sc. thesis + MAPC master project -->
               <li class="stack-item stack-item--accent">Agent-Based Modelling</li>
               <li class="stack-item stack-item--accent">Dijkstra / A*</li>
               <li class="stack-item stack-item--accent">Multi-Agent Systems</li>
               <li class="stack-item stack-item--accent">BDI / GOAL</li>
-              <!-- Testing & QA — Rogersoft SDET role -->
               <li class="stack-item">Selenium WebDriver</li>
               <li class="stack-item">JUnit / TestNG</li>
               <li class="stack-item">JMeter</li>
               <li class="stack-item">Burp Suite</li>
-              <!-- CI/CD & Tools — Rogersoft role + general dev practice -->
               <li class="stack-item">Jenkins</li>
               <li class="stack-item">GitHub Actions</li>
               <li class="stack-item">Jira</li>
               <li class="stack-item">Git</li>
               <li class="stack-item">Eclipse</li>
               <li class="stack-item">IntelliJ IDEA</li>
-              <!-- Data — M.Sc. thesis analysis -->
               <li class="stack-item">Pandas</li>
               <li class="stack-item">Matplotlib</li>
-              <!-- Databases — Total Control + Verbicio + Matrix projects -->
               <li class="stack-item">MySQL</li>
               <li class="stack-item">SQLite</li>
               <li class="stack-item">SQL Server</li>
               <li class="stack-item">JDBC</li>
-              <!-- Mobile — Total Control bachelor project -->
               <li class="stack-item">Android SDK</li>
-              <!-- Concepts — Matrix training + all academic work -->
               <li class="stack-item">OOP</li>
               <li class="stack-item">Data Structures</li>
               <li class="stack-item">Agile / Scrum</li>
@@ -581,8 +604,13 @@
           </div>
 
           <address class="contact__links">
+            <!--
+              Email is HTML-entity-encoded to slow down naive spam harvesters.
+              Browsers render it correctly; bots reading raw bytes may miss it.
+              For full protection, replace with a Formspree contact form.
+            -->
             <a
-              href="mailto:sidharthvk80@gmail.com"
+              href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;sidharthvk80&#64;gmail.com"
               class="contact-link"
               aria-label="Send an email to Sidharth"
             >
@@ -593,7 +621,7 @@
               </span>
               <span class="contact-link__body">
                 <span class="contact-link__label">Email</span>
-                <span class="contact-link__value">sidharthvk80@gmail.com</span>
+                <span class="contact-link__value">sidharthvk80&#64;gmail.com</span>
               </span>
               <span class="contact-link__arrow" aria-hidden="true">→</span>
             </a>
@@ -658,11 +686,10 @@
   </footer>
 
   <!--
-    JavaScript — type="module" auto-defers the script (equivalent to adding
-    the defer attribute), so it never blocks HTML parsing. The module is
-    fetched and executed only after the DOM is fully parsed.
+    type="module" auto-defers the script (no blocking). The module runtime
+    also enforces strict mode automatically — no 'use strict' needed.
   -->
-  <script src="js/main.js" type="module" defer></script>
+  <script src="js/main.js" type="module"></script>
 
 </body>
 </html>
