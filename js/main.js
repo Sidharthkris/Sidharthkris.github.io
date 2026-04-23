@@ -12,9 +12,11 @@
  *   6. FooterYear         — auto-updating copyright year
  *   7. KeyboardA11y       — focus trap inside open mobile menu
  *   8. bootstrap          — wires everything together on DOMContentLoaded
+ *
+ * Note: 'use strict' is intentionally omitted. This file is loaded with
+ * type="module", which the ECMAScript spec mandates runs in strict mode
+ * automatically. The directive would be redundant.
  */
-
-'use strict';
 
 /* ─────────────────────────────────────────
    1. THEME MANAGER
@@ -38,18 +40,24 @@ const ThemeManager = (() => {
 
   /**
    * Apply a theme by setting the data-theme attribute on <html>.
-   * CSS variable overrides in [data-theme="dark"] handle all visual changes.
-   * Also updates the toggle button's aria-label to describe the *action*
-   * (i.e. "switch to light mode" when currently dark).
+   * Also updates the toggle button's aria-label (describes the *action*,
+   * i.e. "switch to light mode" when currently dark) and aria-pressed
+   * (reflects the current toggle state for assistive technologies).
    */
   const apply = (theme) => {
     ROOT.setAttribute('data-theme', theme);
     localStorage.setItem(STORAGE_KEY, theme);
+
     if (TOGGLE_BTN) {
+      const isDark = theme === 'dark';
+      // aria-label: describes what will happen on click (the action)
       TOGGLE_BTN.setAttribute(
         'aria-label',
-        theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
+        isDark ? 'Switch to light mode' : 'Switch to dark mode'
       );
+      // aria-pressed: reflects the current state for screen readers.
+      // Convention: "dark mode ON" = pressed = true.
+      TOGGLE_BTN.setAttribute('aria-pressed', String(isDark));
     }
   };
 
@@ -84,10 +92,10 @@ const ThemeManager = (() => {
      a) Compact nav — adds .is-compact to shrink the nav bar after scrolling
         past the hero, giving content more vertical space.
      b) Active link — highlights the nav link corresponding to whichever
-        section currently occupies the top of the viewport. Works by comparing
-        scrollY against each section's offsetTop minus a 120 px lookahead.
+        section currently occupies the top of the viewport.
      c) Mobile menu — toggles the off-canvas menu, manages aria-expanded
         state, closes on link click / Escape / viewport resize.
+        Focus is returned to the hamburger button on close (WCAG 2.1 SC 2.4.3).
 ───────────────────────────────────────── */
 const NavigationManager = (() => {
   const NAV         = document.querySelector('.nav');
@@ -107,22 +115,15 @@ const NavigationManager = (() => {
     updateActiveLink();
   };
 
-  /* ── b) Active link tracking ──
-     Iterates all sections; the last one whose top edge is above
-     (scrollY + 120 px lookahead) wins. This means the nav link updates
-     slightly before the section header reaches the top of the viewport,
-     which feels more responsive than waiting for it to reach the very top. */
+  /* ── b) Active link tracking ── */
   const updateActiveLink = () => {
     let currentId = '';
 
     SECTIONS.forEach((section) => {
-      // 120 px offset accounts for the fixed nav height plus a small buffer
       const sectionTop = section.offsetTop - 120;
       if (window.scrollY >= sectionTop) currentId = section.getAttribute('id');
     });
 
-    // Toggle .is-active on the link whose href matches the current section.
-    // CSS in components.css uses .is-active to show the accent underline.
     NAV_LINKS.forEach((link) => {
       const isActive = link.getAttribute('href') === `#${currentId}`;
       link.classList.toggle('is-active', isActive);
@@ -133,8 +134,6 @@ const NavigationManager = (() => {
   const toggleMobile = () => {
     isMobileOpen = !isMobileOpen;
     HAMBURGER?.setAttribute('aria-expanded', String(isMobileOpen));
-    // Using the hidden attribute keeps the menu out of the accessibility tree
-    // when closed, not just visually hidden via CSS.
     if (MOBILE_MENU) MOBILE_MENU.hidden = !isMobileOpen;
   };
 
@@ -143,31 +142,31 @@ const NavigationManager = (() => {
     isMobileOpen = false;
     HAMBURGER?.setAttribute('aria-expanded', 'false');
     if (MOBILE_MENU) MOBILE_MENU.hidden = true;
+    // Return focus to the trigger element so keyboard and screen-reader
+    // users remain oriented after the overlay closes.
+    // WCAG 2.1 Success Criterion 2.4.3 — Focus Order.
+    HAMBURGER?.focus();
   };
 
   const init = () => {
-    // passive: true tells the browser this handler never calls preventDefault(),
-    // allowing it to optimise scroll performance (avoids scroll jank).
     window.addEventListener('scroll', onScroll, { passive: true });
     HAMBURGER?.addEventListener('click', toggleMobile);
 
-    // Close menu when a nav link is tapped (smooth scroll takes over)
+    // Close menu when a nav link is tapped
     MOBILE_MENU?.querySelectorAll('.mobile-menu__link').forEach((link) => {
       link.addEventListener('click', closeMobile);
     });
 
-    // Standard accessibility pattern: Escape closes overlays
+    // Escape closes overlays — standard accessibility pattern
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeMobile();
     });
 
-    // If the viewport grows past the mobile breakpoint while the menu is open
-    // (e.g. device rotation), close it so the desktop nav can take over.
+    // Close if viewport grows past the mobile breakpoint (e.g. rotation)
     window.matchMedia('(min-width: 900px)').addEventListener('change', (e) => {
       if (e.matches) closeMobile();
     });
 
-    // Run once on page load so the correct link is active on deep-link URLs
     updateActiveLink();
   };
 
@@ -180,14 +179,6 @@ const NavigationManager = (() => {
    Uses IntersectionObserver to add .is-visible to elements
    marked with .js-reveal, triggering the CSS transition
    defined in layout.css (opacity + translateY).
-
-   Each element is unobserved after its first reveal so the
-   animation only plays once — re-observing on scroll-up would
-   feel repetitive and clutters the animation queue.
-
-   rootMargin: '0px 0px -48px 0px' triggers the animation
-   48 px *before* the element reaches the very bottom of the
-   viewport, so it's already in motion as it scrolls into view.
 ───────────────────────────────────────── */
 const ScrollReveal = (() => {
   const SELECTOR  = '.js-reveal';
@@ -198,13 +189,13 @@ const ScrollReveal = (() => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           entry.target.classList.add(CSS_CLASS);
-          obs.unobserve(entry.target); // animate once only
+          obs.unobserve(entry.target);
         }
       });
     },
     {
-      threshold:  0.12,        // element must be 12% visible before triggering
-      rootMargin: '0px 0px -48px 0px', // early trigger at bottom of viewport
+      threshold:  0.12,
+      rootMargin: '0px 0px -48px 0px',
     }
   );
 
@@ -227,33 +218,17 @@ const ScrollReveal = (() => {
 ───────────────────────────────────────── */
 const CounterAnimation = (() => {
   const SELECTOR = '[data-target]';
-  const DURATION = 1600; // ms — total animation duration
+  const DURATION = 1600; // ms
 
-  /**
-   * Drives a single counter element from 0 → target.
-   * Uses a cubic ease-out: progress = 1 - (1 - t)³
-   * This gives a fast initial count that decelerates into the final value,
-   * mimicking the feel of a physical odometer settling.
-   *
-   * @param {HTMLElement} el     - the span holding the displayed number
-   * @param {number}      target - the value to count up to
-   * @param {string}      suffix - text appended after the number
-   */
   const animateCounter = (el, target, suffix = '') => {
     const startTime = performance.now();
 
     const step = (currentTime) => {
       const elapsed  = currentTime - startTime;
-      const progress = Math.min(elapsed / DURATION, 1); // clamp to [0, 1]
+      const progress = Math.min(elapsed / DURATION, 1);
+      const eased    = 1 - Math.pow(1 - progress, 3);
+      const value    = Math.round(eased * target);
 
-      // Cubic ease-out — fast start, smooth deceleration
-      const eased = 1 - Math.pow(1 - progress, 3);
-      const value = Math.round(eased * target);
-
-      // Format the display value.
-      // "K" suffix: show as decimal thousands (e.g. 9.0K)
-      // "+" suffix: show thousands with K+ if ≥ 1000
-      // Any other suffix (e.g. "yr+"): append directly
       if (suffix === 'K' && value >= 1000) {
         el.textContent = `${(value / 1000).toFixed(1)}K`;
       } else if (suffix === '+') {
@@ -264,16 +239,12 @@ const CounterAnimation = (() => {
         el.textContent = `${value}${suffix}`;
       }
 
-      // Continue until progress reaches 1
       if (progress < 1) requestAnimationFrame(step);
     };
 
     requestAnimationFrame(step);
   };
 
-  // Only start the animation when the stat is at least 60% visible —
-  // higher threshold than ScrollReveal so the count-up starts close to
-  // when the user is actually reading the stat.
   const observer = new IntersectionObserver(
     (entries, obs) => {
       entries.forEach((entry) => {
@@ -282,7 +253,7 @@ const CounterAnimation = (() => {
           const target = parseInt(el.dataset.target, 10);
           const suffix = el.dataset.suffix ?? '';
           animateCounter(el, target, suffix);
-          obs.unobserve(el); // animate once only
+          obs.unobserve(el);
         }
       });
     },
@@ -302,17 +273,27 @@ const CounterAnimation = (() => {
    Intercepts clicks on internal anchor links (href="#...") and
    replaces the browser's default jump with a smooth scroll.
 
-   The fixed nav bar means the browser's native scrollIntoView
-   would land with the target heading hidden behind the nav.
-   This module calculates the correct scroll position by
-   subtracting the nav height (64 px) + 16 px breathing room
-   from the element's document-relative top.
+   NAV_HEIGHT is read live from the CSS custom property --nav-height
+   so there is a single source of truth. If you change --nav-height
+   in variables.css, this module automatically picks up the new value —
+   no manual sync required (audit fix: Issue 2).
 
-   history.pushState updates the URL hash without a page jump,
-   keeping the address bar useful for sharing and back-navigation.
+   Respects prefers-reduced-motion: users who have requested reduced
+   motion in their OS/browser get an instant scroll instead of smooth,
+   avoiding vestibular discomfort (audit fix: Issue 6, WCAG 2.1 SC 2.3.3).
 ───────────────────────────────────────── */
 const SmoothScroll = (() => {
-  const NAV_HEIGHT = 64; // keep in sync with --nav-height in variables.css
+  /**
+   * Reads --nav-height from the live computed CSS custom property.
+   * Falls back to 64 if the property is missing or unparseable.
+   * Called as a function so it always reflects the current value,
+   * even if the property changes at a breakpoint.
+   */
+  const getNavHeight = () =>
+    parseInt(
+      getComputedStyle(document.documentElement).getPropertyValue('--nav-height'),
+      10
+    ) || 64;
 
   /**
    * Scroll to a section by ID, offset by the fixed nav height.
@@ -321,20 +302,26 @@ const SmoothScroll = (() => {
   const scrollToTarget = (id) => {
     const target = document.getElementById(id);
     if (!target) return;
-    const top = target.getBoundingClientRect().top + window.scrollY - NAV_HEIGHT - 16;
-    window.scrollTo({ top, behavior: 'smooth' });
+
+    const top = target.getBoundingClientRect().top + window.scrollY - getNavHeight() - 16;
+
+    // Honour the user's OS/browser motion preference.
+    // 'instant' = zero animation; 'smooth' = CSS scroll-behavior animation.
+    const prefersReduced =
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    window.scrollTo({ top, behavior: prefersReduced ? 'instant' : 'smooth' });
   };
 
   const init = () => {
     document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
       anchor.addEventListener('click', (e) => {
         const id = anchor.getAttribute('href').slice(1);
-        if (!id) return; // skip bare '#' hrefs (e.g. logo link to top)
+        if (!id) return;
         const el = document.getElementById(id);
         if (!el) return;
         e.preventDefault();
         scrollToTarget(id);
-        // Update URL hash silently — no scroll jump from pushState
         history.pushState(null, '', `#${id}`);
       });
     });
@@ -363,10 +350,6 @@ const FooterYear = (() => {
    Traps Tab focus inside the mobile menu while it's open.
    Without this, Tab would escape the overlay and focus elements
    behind it, confusing keyboard and screen-reader users.
-
-   Implementation: identifies the first and last focusable elements
-   in the container. When Tab would move past the last element, it
-   wraps to the first; Shift+Tab past the first wraps to the last.
 ───────────────────────────────────────── */
 const KeyboardA11y = (() => {
   const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -384,13 +367,11 @@ const KeyboardA11y = (() => {
       if (e.key !== 'Tab') return;
 
       if (e.shiftKey) {
-        // Shift+Tab from first element → wrap to last
         if (document.activeElement === first) {
           e.preventDefault();
           last.focus();
         }
       } else {
-        // Tab from last element → wrap to first
         if (document.activeElement === last) {
           e.preventDefault();
           first.focus();
@@ -410,11 +391,11 @@ const KeyboardA11y = (() => {
 
 /* ─────────────────────────────────────────
    8. BOOTSTRAP
-   Initialises all modules. Called once the DOM is ready.
+   Initialises all modules once the DOM is ready.
 
-   Note: this script is loaded with type="module" which auto-defers
-   execution until after the DOM is parsed — the DOMContentLoaded
-   guard is belt-and-braces for any non-module usage context.
+   type="module" auto-defers execution until after the DOM is parsed,
+   so the DOMContentLoaded guard is a belt-and-braces safety net for
+   any non-module usage context only.
 ───────────────────────────────────────── */
 const bootstrap = () => {
   ThemeManager.init();
