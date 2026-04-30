@@ -34,9 +34,17 @@
 
 /* ─────────────────────────────────────────
    6. CURSOR GLOW
+   FIX #15 / FIX #6 — replaced left/top with transform.
+   left/top changes trigger layout + paint on every mouse-move frame.
+   transform changes are GPU-composited (compositor thread only) —
+   no layout, no paint, just a cheap matrix multiply.
+   The JS now sets style.transform = `translate(${x}px, ${y}px) translate(-50%,-50%)`
+   instead of style.left / style.top.
 ───────────────────────────────────────── */
 .cursor-glow {
   position: fixed;
+  top: 0;
+  left: 0;
   pointer-events: none;
   z-index: 1;
   width: 520px;
@@ -47,9 +55,11 @@
     var(--color-accent-glow) 0%,
     transparent 65%
   );
-  transform: translate(-50%, -50%);
-  transition: left 0.14s ease-out, top 0.14s ease-out;
-  will-change: left, top;
+  /* Default: positioned off-screen until first mousemove */
+  transform: translate(-999px, -999px) translate(-50%, -50%);
+  /* Transition only opacity (for enter/leave); transform is driven by rAF for smoothness */
+  transition: opacity 0.3s ease-out;
+  will-change: transform;
 }
 
 /* ─────────────────────────────────────────
