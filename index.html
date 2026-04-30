@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <meta name="description" content="Sidharth Vijayan Krishnan — Software Engineer specialising in agent-based simulation, algorithms, and multi-agent systems. M.Sc. Computer Science, TU Clausthal." />
+  <meta name="author" content="Sidharth Vijayan Krishnan" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://sidharthkris.github.io/" />
+
+  <meta property="og:title"        content="Sidharth Vijayan Krishnan · Software Engineer" />
+  <meta property="og:description"  content="Software Engineer specialising in simulation, algorithms, and intelligent systems. M.Sc. Computer Science, TU Clausthal." />
+  <meta property="og:type"         content="website" />
+  <meta property="og:url"          content="https://sidharthkris.github.io/" />
+  <meta property="og:image"        content="https://sidharthkris.github.io/assets/og-image.png" />
+  <meta property="og:image:width"  content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale"       content="en_GB" />
+  <meta property="og:site_name"    content="Sidharth Vijayan Krishnan" />
+
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content="Sidharth Vijayan Krishnan · Software Engineer" />
+  <meta name="twitter:description" content="Software Engineer specialising in simulation, algorithms, and intelligent systems." />
+  <meta name="twitter:image"       content="https://sidharthkris.github.io/assets/og-image.png" />
+
+  <!-- Teal theme color for browser chrome -->
+  <meta name="theme-color" content="#0D7377" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#2DD4BF" media="(prefers-color-scheme: dark)" />
+
+  <!-- SVG favicon — teal accent, "S" initial -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230D7377'/><text y='.875em' font-size='62' font-family='system-ui,sans-serif' font-weight='700' fill='%23fff' x='50%25' text-anchor='middle'>S</text></svg>" />
+
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self';
+                 script-src  'self';
+                 style-src   'self' https://fonts.googleapis.com 'unsafe-inline';
+                 font-src    https://fonts.gstatic.com;
+                 img-src     'self' data:;
+                 connect-src 'self';" />
+
+  <title>Sidharth Vijayan Krishnan · Software Engineer</title>
+
+  <!--
+    Font system — Three roles:
+      Space Grotesk → display headings
+      Inter         → body copy
+      DM Mono       → labels, kickers, mono elements
+    Non-blocking: rel="preload" + onload swap.
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    rel="preload" as="style"
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" />
+  </noscript>
+
+  <!-- Parallel preload for all three CSS files -->
+  <link rel="preload" href="css/variables.css"  as="style" />
+  <link rel="preload" href="css/layout.css"     as="style" />
+  <link rel="preload" href="css/components.css" as="style" />
+
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+</head>
+
+<body>
+
+  <!-- WCAG 2.1 SC 2.4.1 — first focusable element -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- ═══════════════════════════════════
+       NAVIGATION
+  ═══════════════════════════════════ -->
+  <header class="site-header" role="banner">
+    <nav class="nav" aria-label="Primary navigation">
+      <a href="#hero" class="nav__logo" aria-label="Go to top">SVK</a>
+
+      <ul class="nav__links" role="list">
+        <li><a href="#about"      class="nav__link">About</a></li>
+        <li><a href="#projects"   class="nav__link">Projects</a></li>
+        <li><a href="#experience" class="nav__link">Experience</a></li>
+        <li><a href="#contact"    class="nav__link">Contact</a></li>
+      </ul>
+
+      <div class="nav__actions">
+        <button class="theme-toggle" id="themeToggle"
+          aria-label="Switch to dark mode" aria-pressed="false" title="Toggle theme">
+          <svg class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true"
+               viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          </svg>
+          <svg class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true"
+               viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+          </svg>
+        </button>
+
+        <button class="nav__hamburger" id="hamburger"
+          aria-label="Toggle menu" aria-expanded="false" aria-controls="mobileMenu">
+          <span class="nav__hamburger-line"></span>
+          <span class="nav__hamburger-line"></span>
+        </button>
+      </div>
+    </nav>
+
+    <div class="mobile-menu" id="mobileMenu"
+      role="dialog" aria-modal="true" aria-label="Mobile navigation" hidden>
+      <ul class="mobile-menu__links" role="list">
+        <li><a href="#about"      class="mobile-menu__link">About</a></li>
+        <li><a href="#projects"   class="mobile-menu__link">Projects</a></li>
+        <li><a href="#experience" class="mobile-menu__link">Experience</a></li>
+        <li><a href="#contact"    class="mobile-menu__link">Contact</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main id="main-content">
+
+    <!-- ═══════════════════════════════════
+         HERO
+    ═══════════════════════════════════ -->
+    <section class="hero" id="hero" aria-label="Introduction">
+      <div class="hero__inner container">
+
+        <!-- Pulsing availability badge -->
+        <div class="availability-badge" aria-label="Currently available for opportunities">
+          <span class="availability-badge__dot" aria-hidden="true"></span>
+          Available for opportunities
+        </div>
+
+        <!-- Mono kicker -->
+        <div class="hero__kicker">
+          <span class="hero__kicker-line" aria-hidden="true"></span>
+          <span>Software Engineer · Germany</span>
+        </div>
+
+        <!--
+          Three-tier typographic hierarchy:
+          1. "Sidharth"  — solid charcoal fill   (dominant weight)
+          2. "Vijayan"   — teal→cyan gradient    (colour contrast)
+          3. "Krishnan"  — text stroke / outline  (structural, fills on hover)
+        -->
+        <h1 class="hero__name">
+          <span class="hero__name-first js-reveal" style="--delay:0.05s">Sidharth</span>
+          <span class="hero__name-mid   js-reveal" style="--delay:0.15s"><em>Vijayan</em></span>
+          <span class="hero__name-last  js-reveal" style="--delay:0.25s">Krishnan</span>
+        </h1>
+
+        <div class="hero__meta js-reveal" style="--delay:0.4s">
+          <p class="hero__tagline">
+            Building systems where individual rules produce emergent outcomes —
+            from agent-based evacuation models to interactive algorithm visualisers.
+            M.Sc. Computer Science, TU Clausthal.
+          </p>
+          <div class="hero__cta-group">
+            <a href="#projects" class="btn btn--primary">View Projects</a>
+            <a href="#contact"  class="btn btn--ghost">Get in Touch</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero__scroll-indicator" aria-hidden="true">
+        <div class="hero__scroll-line"></div>
+        <span class="hero__scroll-label">Scroll</span>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════
+         MARQUEE STRIP
+         Pure CSS scrolling ticker — no JS.
+         aria-hidden: decorative, not a navigation element.
+         Items are duplicated for a seamless infinite loop.
+    ═══════════════════════════════════ -->
+    <div class="marquee-strip" aria-hidden="true">
+      <div class="marquee-track">
+        <!-- First set -->
+        <span class="marquee-item">Java</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">Python</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">Agent-Based Modelling</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">Dijkstra / A*</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">Selenium WebDriver</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">NetLogo</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">Multi-Agent Systems</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">BDI / GOAL</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">JMeter</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">Jenkins</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">GitHub Actions</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">SQL</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">Pandas</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">Android SDK</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">ASP.NET</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">Burp Suite</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">IntelliJ IDEA</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">Agile / Scrum</span><span class="marquee-sep">·</span>
+        <!-- Duplicate set — enables seamless loop when first set scrolls fully off -->
+        <span class="marquee-item">Java</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">Python</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">Agent-Based Modelling</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">Dijkstra / A*</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">Selenium WebDriver</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">NetLogo</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">Multi-Agent Systems</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">BDI / GOAL</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">JMeter</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">Jenkins</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">GitHub Actions</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">SQL</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">Pandas</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">Android SDK</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">ASP.NET</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">Burp Suite</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">IntelliJ IDEA</span><span class="marquee-sep">·</span>
+        <span class="marquee-item">Agile / Scrum</span><span class="marquee-sep">·</span>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════
+         ABOUT — data-num → ghost numeral
+    ═══════════════════════════════════ -->
+    <section class="section about" id="about" data-num="01" aria-labelledby="about-heading">
+      <div class="container">
+        <div class="section__header js-reveal">
+          <span class="section__number" aria-hidden="true">01</span>
+          <h2 class="section__title" id="about-heading">About</h2>
+        </div>
+
+        <div class="about__grid">
+          <div class="about__copy js-reveal">
+            <p>
+              I am a computer scientist with expertise spanning
+              <strong>agent-based simulation</strong>, software quality engineering,
+              and intelligent systems design. My master's thesis at TU Clausthal
+              modelled emergency evacuation dynamics across five lecture-hall
+              layouts — incorporating panic contagion, herding behaviour, and a
+              Dijkstra-variant pathfinding engine.
+            </p>
+            <p>
+              On the engineering side, I have hands-on experience in
+              <strong>test automation</strong> (Selenium WebDriver, JMeter, Burp Suite)
+              and CI/CD integration (Jenkins, GitHub Actions), alongside three years
+              as a software developer and technical trainer at Matrix Technologies —
+              supervising end-to-end Java projects and building structured training
+              curricula.
+            </p>
+            <p>
+              My stack spans Java, Python, test automation tooling, and the full
+              web platform, with a consistent thread of rigorous thinking and clear
+              technical communication.
+            </p>
+
+            <dl class="about__details">
+              <div class="about__detail-row">
+                <dt>Location</dt>
+                <dd>Barsinghausen, Hannover, Germany</dd>
+              </div>
+              <div class="about__detail-row">
+                <dt>Languages</dt>
+                <dd>English (fluent) · German (B1) · Malayalam (native)</dd>
+              </div>
+              <div class="about__detail-row">
+                <dt>Education</dt>
+                <dd>M.Sc. Computer Science, TU Clausthal · B.Tech Computer Science, MBITS Kerala</dd>
+              </div>
+            </dl>
+          </div>
+
+          <aside class="about__stack js-reveal" aria-label="Technology stack">
+            <h3 class="about__stack-title">Tech Stack</h3>
+            <ul class="stack-grid" role="list">
+              <li class="stack-item">Java</li>
+              <li class="stack-item">Python</li>
+              <li class="stack-item">JavaScript</li>
+              <li class="stack-item">SQL</li>
+              <li class="stack-item">PHP</li>
+              <li class="stack-item">HTML5 / CSS3</li>
+              <li class="stack-item">ASP.NET</li>
+              <li class="stack-item">NetLogo</li>
+              <li class="stack-item stack-item--accent">Agent-Based Modelling</li>
+              <li class="stack-item stack-item--accent">Dijkstra / A*</li>
+              <li class="stack-item stack-item--accent">Multi-Agent Systems</li>
+              <li class="stack-item stack-item--accent">BDI / GOAL</li>
+              <li class="stack-item">Selenium WebDriver</li>
+              <li class="stack-item">JUnit / TestNG</li>
+              <li class="stack-item">JMeter</li>
+              <li class="stack-item">Burp Suite</li>
+              <li class="stack-item">Jenkins</li>
+              <li class="stack-item">GitHub Actions</li>
+              <li class="stack-item">Jira</li>
+              <li class="stack-item">Git</li>
+              <li class="stack-item">Eclipse</li>
+              <li class="stack-item">IntelliJ IDEA</li>
+              <li class="stack-item">Pandas</li>
+              <li class="stack-item">Matplotlib</li>
+              <li class="stack-item">MySQL</li>
+              <li class="stack-item">SQLite</li>
+              <li class="stack-item">SQL Server</li>
+              <li class="stack-item">JDBC</li>
+              <li class="stack-item">Android SDK</li>
+              <li class="stack-item">OOP</li>
+              <li class="stack-item">Data Structures</li>
+              <li class="stack-item">Agile / Scrum</li>
+            </ul>
+          </aside>
+        </div>
+
+        <div class="stats-row js-reveal" aria-label="Key figures">
+          <div class="stat">
+            <span class="stat__number" data-target="5">0</span>
+            <span class="stat__label">Hall layouts tested</span>
+          </div>
+          <div class="stat">
+            <span class="stat__number" data-target="3" data-suffix="yr+">0</span>
+            <span class="stat__label">Engineering experience</span>
+          </div>
+          <div class="stat">
+            <span class="stat__number" data-target="2">0</span>
+            <span class="stat__label">CS degrees</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════
+         PROJECTS
+    ═══════════════════════════════════ -->
+    <section class="section projects" id="projects" data-num="02" aria-labelledby="projects-heading">
+      <div class="container">
+        <div class="section__header js-reveal">
+          <span class="section__number" aria-hidden="true">02</span>
+          <h2 class="section__title" id="projects-heading">Projects</h2>
+        </div>
+
+        <!-- Featured — teal left border + glow shadow on hover -->
+        <article class="project-card project-card--featured js-reveal"
+          aria-label="Emergency Evacuation Simulation — featured project">
+          <div class="project-card__content">
+            <header class="project-card__header">
+              <span class="project-card__badge">Featured Research</span>
+              <h3 class="project-card__title">Emergency Evacuation Simulation</h3>
+              <p class="project-card__meta">Master's Thesis · TU Clausthal · 2025</p>
+            </header>
+            <p class="project-card__desc">
+              A large-scale agent-based simulation modelling emergency evacuation
+              dynamics across five university lecture-hall layouts. The system
+              incorporates heterogeneous agent populations — students, professors,
+              mobility-impaired individuals — each with distinct panic thresholds,
+              familiarity coefficients, and movement speeds. Core engine: a
+              Dijkstra-variant pathfinding algorithm with real-time rerouting under
+              congestion. Panic contagion and herding dynamics are modelled as
+              emergent social phenomena. Over 9,000 parameterised experiments
+              conducted via BehaviorSpace.
+            </p>
+            <p class="project-card__finding">
+              <strong>Key finding:</strong> Modern multi-aisle layouts with
+              symmetrical exit placement reduce median evacuation time by up to
+              38% versus traditional single-aisle configurations. Herding behaviour
+              degrades performance even in well-optimised layouts.
+            </p>
+            <ul class="project-card__tech" role="list" aria-label="Technologies used">
+              <li>NetLogo</li><li>Python</li><li>Pandas</li>
+              <li>Matplotlib</li><li>BehaviorSpace</li><li>Dijkstra pathfinding</li>
+            </ul>
+          </div>
+          <footer class="project-card__footer">
+            <a href="https://github.com/Sidharthkris/emergency-evacuation-simulation"
+               class="btn btn--outline" target="_blank" rel="noopener noreferrer"
+               aria-label="View Emergency Evacuation Simulation on GitHub">GitHub</a>
+            <p class="project-card__supervisor">
+              Supervised by Dr. T. Ahlbrecht &amp; Prof. Dr. R. Bredereck,
+              Institute of Computer Science, TU Clausthal
+            </p>
+          </footer>
+        </article>
+
+        <!-- CSS counter auto-labels these 01–04 via ::after -->
+        <div class="projects-grid">
+          <article class="project-card js-reveal" style="--delay:0.05s"
+            aria-label="Pathfinding Visualizer">
+            <div class="project-card__content">
+              <header class="project-card__header">
+                <h3 class="project-card__title">Pathfinding Visualizer</h3>
+                <p class="project-card__meta">Interactive Tool · HTML / JavaScript</p>
+              </header>
+              <p class="project-card__desc">
+                Browser-based interactive tool rendering graph traversal algorithms
+                step-by-step on a live grid. Zero dependencies; built on the native
+                Canvas API.
+              </p>
+              <ul class="project-card__tech" role="list" aria-label="Technologies used">
+                <li>HTML5</li><li>CSS3</li><li>JavaScript</li><li>Canvas API</li>
+              </ul>
+            </div>
+            <footer class="project-card__footer">
+              <a href="https://github.com/Sidharthkris/pathfinding-visualizer"
+                 class="btn btn--outline" target="_blank" rel="noopener noreferrer"
+                 aria-label="View Pathfinding Visualizer on GitHub">GitHub</a>
+            </footer>
+          </article>
+
+          <article class="project-card js-reveal" style="--delay:0.1s"
+            aria-label="Multi-Agent MAPC">
+            <div class="project-card__content">
+              <header class="project-card__header">
+                <h3 class="project-card__title">Multi-Agent Systems · MAPC</h3>
+                <p class="project-card__meta">Coursework · TU Clausthal · Java / GOAL</p>
+              </header>
+              <p class="project-card__desc">
+                Competitive multi-agent system for the MAPC hex-grid exploration
+                challenge. Agents in the GOAL BDI language with A* pathfinding
+                and Java backend communication with MASSim.
+              </p>
+              <ul class="project-card__tech" role="list" aria-label="Technologies used">
+                <li>Java</li><li>GOAL</li><li>A* Pathfinding</li>
+                <li>MASSim</li><li>BDI Architecture</li>
+              </ul>
+            </div>
+            <footer class="project-card__footer">
+              <span class="project-card__note">Academic work</span>
+            </footer>
+          </article>
+
+          <article class="project-card js-reveal" style="--delay:0.15s"
+            aria-label="Total Control CBAC">
+            <div class="project-card__content">
+              <header class="project-card__header">
+                <h3 class="project-card__title">Total Control</h3>
+                <p class="project-card__meta">Bachelor's Project · Context-Based Access Control</p>
+              </header>
+              <p class="project-card__desc">
+                CBAC framework enforcing fine-grained context-aware permissions with
+                dynamic runtime enforcement via WiFi SSID, GPS, and system time.
+              </p>
+              <ul class="project-card__tech" role="list" aria-label="Technologies used">
+                <li>Java</li><li>Android SDK</li><li>PHP</li><li>MySQL</li><li>SQLite</li>
+              </ul>
+            </div>
+            <footer class="project-card__footer">
+              <span class="project-card__note">Academic work</span>
+            </footer>
+          </article>
+
+          <article class="project-card js-reveal" style="--delay:0.2s"
+            aria-label="Freelance Bruit">
+            <div class="project-card__content">
+              <header class="project-card__header">
+                <h3 class="project-card__title">Freelance Bruit</h3>
+                <p class="project-card__meta">Bachelor's Project · ASP.NET</p>
+              </header>
+              <p class="project-card__desc">
+                Content publishing platform for freelance journalists with secure
+                authentication, role-based access control, and editorial workflow
+                management.
+              </p>
+              <ul class="project-card__tech" role="list" aria-label="Technologies used">
+                <li>ASP.NET</li><li>C#</li><li>SQL Server</li><li>HTML/CSS</li>
+              </ul>
+            </div>
+            <footer class="project-card__footer">
+              <span class="project-card__note">Academic work</span>
+            </footer>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════
+         EXPERIENCE — vertical timeline
+    ═══════════════════════════════════ -->
+    <section class="section experience" id="experience" data-num="03" aria-labelledby="experience-heading">
+      <div class="container">
+        <div class="section__header js-reveal">
+          <span class="section__number" aria-hidden="true">03</span>
+          <h2 class="section__title" id="experience-heading">Experience</h2>
+        </div>
+
+        <!-- .exp-list::before = gradient line; .exp-card::before = animated dot -->
+        <div class="exp-list">
+
+          <article class="exp-card js-reveal"
+            aria-label="SDET Intern at Rogersoft Technologies">
+            <div class="exp-card__top">
+              <div class="exp-card__left">
+                <h3 class="exp-card__role">Software Development Engineer in Test</h3>
+                <p class="exp-card__company">Rogersoft Technologies Pvt Ltd · Kerala, India</p>
+              </div>
+              <div class="exp-card__right">
+                <span class="exp-card__date">Dec 2018 – Mar 2019</span>
+                <span class="exp-card__badge">Internship</span>
+              </div>
+            </div>
+            <ul class="exp-card__points">
+              <li>Built <strong>Selenium WebDriver</strong> automation scripts to improve regression testing efficiency</li>
+              <li>Integrated tests into <strong>Jenkins / GitHub Actions</strong> CI/CD pipelines for faster release feedback</li>
+              <li>Conducted performance testing with <strong>Apache JMeter</strong> and security assessments with <strong>Burp Suite</strong></li>
+              <li>Tracked defects in Jira, collaborating with developers to improve stability and security</li>
+            </ul>
+            <ul class="exp-card__tech" role="list" aria-label="Technologies used">
+              <li>Selenium WebDriver</li><li>Java</li><li>JUnit</li>
+              <li>JMeter</li><li>Burp Suite</li><li>Jenkins</li><li>GitHub Actions</li><li>Jira</li>
+            </ul>
+          </article>
+
+          <article class="exp-card js-reveal" style="--delay:0.1s"
+            aria-label="Software Developer and Trainer at Matrix Technologies">
+            <div class="exp-card__top">
+              <div class="exp-card__left">
+                <h3 class="exp-card__role">Software Developer &amp; Technical Trainer</h3>
+                <p class="exp-card__company">Matrix Technologies Pvt Ltd · Kerala, India</p>
+              </div>
+              <div class="exp-card__right">
+                <span class="exp-card__date">Nov 2015 – Nov 2018</span>
+                <span class="exp-card__badge">Full-time</span>
+              </div>
+            </div>
+            <ul class="exp-card__points">
+              <li>Mentored students in Java development — OOP principles, data structures, and algorithm complexity</li>
+              <li>Supervised end-to-end student projects across the full SDLC, including system design and SQL integration</li>
+              <li>Oversaw a <strong>Library Management System</strong> and <strong>E-Commerce Inventory Tool</strong> built with Java Swing and JDBC</li>
+              <li>Developed structured training materials, coding exercises, and conducted code reviews and debugging sessions</li>
+            </ul>
+            <ul class="exp-card__tech" role="list" aria-label="Technologies used">
+              <li>Java</li><li>Java Swing</li><li>JDBC</li>
+              <li>SQL</li><li>OOP</li><li>SDLC</li><li>Technical Mentoring</li>
+            </ul>
+          </article>
+
+          <article class="exp-card js-reveal" style="--delay:0.2s"
+            aria-label="Web Developer at Verbicio Tech">
+            <div class="exp-card__top">
+              <div class="exp-card__left">
+                <h3 class="exp-card__role">Web Developer</h3>
+                <p class="exp-card__company">Verbicio Tech LLC · Kerala, India</p>
+              </div>
+              <div class="exp-card__right">
+                <span class="exp-card__date">Jul 2014</span>
+                <span class="exp-card__badge">Internship</span>
+              </div>
+            </div>
+            <ul class="exp-card__points">
+              <li>Developed responsive full-stack web modules using HTML, CSS, and JavaScript</li>
+              <li>Integrated SQL Server for secure data handling and dynamic content delivery</li>
+              <li>Managed source code using Git/GitHub in a collaborative team environment</li>
+            </ul>
+            <ul class="exp-card__tech" role="list" aria-label="Technologies used">
+              <li>HTML</li><li>CSS</li><li>JavaScript</li><li>SQL Server</li><li>Git</li>
+            </ul>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════
+         CONTACT
+    ═══════════════════════════════════ -->
+    <section class="section contact" id="contact" data-num="04" aria-labelledby="contact-heading">
+      <div class="container">
+        <div class="section__header js-reveal">
+          <span class="section__number" aria-hidden="true">04</span>
+          <h2 class="section__title" id="contact-heading">Contact</h2>
+        </div>
+
+        <div class="contact__grid js-reveal">
+          <div class="contact__copy">
+            <p class="contact__lead">
+              I engage with technically interesting problems in
+              simulation, backend engineering, and
+              <mark>intelligent systems</mark>.
+              Let's talk.
+            </p>
+          </div>
+
+          <address class="contact__links">
+            <!-- Email entity-encoded to slow naive scrapers -->
+            <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;sidharthvk80&#64;gmail.com"
+               class="contact-link" aria-label="Send an email to Sidharth">
+              <span class="contact-link__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+              </span>
+              <span class="contact-link__body">
+                <span class="contact-link__label">Email</span>
+                <span class="contact-link__value">sidharthvk80&#64;gmail.com</span>
+              </span>
+              <span class="contact-link__arrow" aria-hidden="true">→</span>
+            </a>
+
+            <a href="https://www.linkedin.com/in/sidharth-vijayan-krishnan"
+               class="contact-link" target="_blank" rel="noopener noreferrer"
+               aria-label="Sidharth's LinkedIn profile (opens in new tab)">
+              <span class="contact-link__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                </svg>
+              </span>
+              <span class="contact-link__body">
+                <span class="contact-link__label">LinkedIn</span>
+                <span class="contact-link__value">sidharth-vijayan-krishnan</span>
+              </span>
+              <span class="contact-link__arrow" aria-hidden="true">→</span>
+            </a>
+
+            <a href="https://github.com/Sidharthkris"
+               class="contact-link" target="_blank" rel="noopener noreferrer"
+               aria-label="Sidharth's GitHub profile (opens in new tab)">
+              <span class="contact-link__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+                </svg>
+              </span>
+              <span class="contact-link__body">
+                <span class="contact-link__label">GitHub</span>
+                <span class="contact-link__value">Sidharthkris</span>
+              </span>
+              <span class="contact-link__arrow" aria-hidden="true">→</span>
+            </a>
+          </address>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════ -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container site-footer__inner">
+      <p class="site-footer__copy">
+        © <span id="year"></span> Sidharth Vijayan Krishnan
+      </p>
+      <p class="site-footer__built">
+        Built with HTML · CSS · JS · Hosted on
+        <a href="https://pages.github.com" target="_blank" rel="noopener noreferrer">GitHub Pages</a>
+      </p>
+    </div>
+  </footer>
+
+  <!-- type="module" auto-defers + enforces strict mode -->
+  <script src="js/main.js" type="module"></script>
+
+</body>
+</html>
