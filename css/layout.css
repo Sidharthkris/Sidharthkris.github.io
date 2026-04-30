@@ -82,7 +82,6 @@ section[id] {
   border-bottom: 1px solid var(--color-border);
   background: var(--color-bg-alt);
   padding-block: 0.85rem;
-  /* Prevent flash of unstyled content */
   position: relative;
   z-index: 10;
 }
@@ -95,7 +94,8 @@ section[id] {
   will-change: transform;
   animation: marqueeScroll 38s linear infinite;
 }
-/* Slow down when user is focused elsewhere */
+
+/* Pause when user focuses the strip */
 .marquee-strip:hover .marquee-track { animation-play-state: paused; }
 
 @keyframes marqueeScroll {
@@ -116,7 +116,6 @@ section[id] {
 }
 .marquee-item:hover { color: var(--color-accent); }
 
-/* Separator dot between items */
 .marquee-sep {
   color: var(--color-accent);
   font-size: 0.5rem;
@@ -178,15 +177,100 @@ section[id] {
   :root { --container-max: 1320px; }
 }
 
-/* Reduced motion */
+/* ─────────────────────────────────────────
+   REDUCED MOTION
+───────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration:        0.01ms !important;
     transition-duration:       0.01ms !important;
     animation-iteration-count: 1 !important;
   }
+
   html { scroll-behavior: auto; }
-  .cursor-glow    { display: none !important; }
+
+  /* FIX #13 — .js-reveal elements start hidden (opacity:0). With reduced-motion
+     the transition fires near-instantly (0.01ms above), but the IntersectionObserver
+     still needs to fire to add .is-visible before an element becomes visible.
+     Users who prefer no motion shouldn't have content conditionally hidden at all —
+     override directly so all content is immediately readable regardless of scroll. */
+  .js-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .cursor-glow     { display: none !important; }
   .scroll-progress { transition: none !important; }
-  .marquee-track  { animation: none; }
+  .marquee-track   { animation: none; }
+}
+
+/* ─────────────────────────────────────────
+   FIX #14 — PRINT STYLES
+   Ensures the portfolio renders cleanly when
+   printed or saved as PDF from the browser.
+───────────────────────────────────────── */
+@media print {
+  /* Hide interactive / decorative chrome */
+  .site-header,
+  .hero__scroll-indicator,
+  .marquee-strip,
+  .skip-link,
+  .scroll-progress,
+  .cursor-glow,
+  .nav__hamburger,
+  .theme-toggle,
+  .btn--ghost { display: none !important; }
+
+  /* Ensure all reveal elements are visible */
+  .js-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  /* Remove decorative hero backgrounds */
+  .hero::before,
+  .hero::after { display: none; }
+
+  /* Reset backgrounds to white, text to black for ink saving */
+  body,
+  .hero,
+  .section,
+  .project-card,
+  .exp-card,
+  .contact-link,
+  .stat {
+    background: #fff !important;
+    color: #000 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+
+  /* Remove parallax / transforms */
+  .section[data-num]::after { display: none; }
+
+  /* Expand the container to fill the page */
+  .container { max-width: 100%; padding-inline: 1rem; }
+
+  /* Show full URLs for links */
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.75rem;
+    color: #555;
+    word-break: break-all;
+  }
+
+  /* Don't show URL for navigation/decorative links */
+  .nav__logo::after,
+  .btn::after,
+  .site-footer__built a::after { content: none; }
+
+  /* Keep page breaks clean */
+  .exp-card,
+  .project-card { page-break-inside: avoid; }
+
+  @page {
+    margin: 1.5cm;
+  }
 }
