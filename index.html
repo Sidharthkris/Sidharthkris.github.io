@@ -1,14 +1,23 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
+  <!-- ─── SEO & Discovery ──────────────────────────────── -->
   <meta name="description" content="Sidharth Vijayan Krishnan — Software Engineer specialising in agent-based simulation, algorithms, and multi-agent systems. M.Sc. Computer Science, TU Clausthal." />
   <meta name="author" content="Sidharth Vijayan Krishnan" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://sidharthkris.github.io/" />
 
+  <!-- FIX #4 — Declare colour scheme so the browser pre-styles scrollbars/chrome
+       before JS runs. Without this the OS dark-mode scrollbar stays white-themed. -->
+  <meta name="color-scheme" content="light dark" />
+
+  <!-- FIX #4 — Strict referrer; prevents leaking full URL on outbound clicks. -->
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+  <!-- ─── Open Graph ──────────────────────────────────── -->
   <meta property="og:title"        content="Sidharth Vijayan Krishnan · Software Engineer" />
   <meta property="og:description"  content="Software Engineer specialising in simulation, algorithms, and intelligent systems. M.Sc. Computer Science, TU Clausthal." />
   <meta property="og:type"         content="website" />
@@ -19,21 +28,36 @@
   <meta property="og:locale"       content="en_GB" />
   <meta property="og:site_name"    content="Sidharth Vijayan Krishnan" />
 
+  <!-- ─── Twitter Card ────────────────────────────────── -->
   <meta name="twitter:card"        content="summary_large_image" />
   <meta name="twitter:title"       content="Sidharth Vijayan Krishnan · Software Engineer" />
   <meta name="twitter:description" content="Software Engineer specialising in simulation, algorithms, and intelligent systems." />
   <meta name="twitter:image"       content="https://sidharthkris.github.io/assets/og-image.png" />
 
-  <!-- Teal theme color for browser chrome -->
+  <!-- Browser chrome colour for mobile -->
   <meta name="theme-color" content="#0D7377" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#2DD4BF" media="(prefers-color-scheme: dark)" />
 
-  <!-- SVG favicon — teal accent, "S" initial -->
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230D7377'/><text y='.875em' font-size='62' font-family='system-ui,sans-serif' font-weight='700' fill='%23fff' x='50%25' text-anchor='middle'>S</text></svg>" />
+  <!-- SVG favicon — teal accent "S" initial, better text centering with dominant-baseline -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230D7377'/><text dominant-baseline='central' text-anchor='middle' x='50' y='54' font-size='62' font-family='system-ui,sans-serif' font-weight='700' fill='%23fff'>S</text></svg>" />
 
+  <!--
+    FIX #1 — Content Security Policy
+    ─────────────────────────────────
+    ORIGINAL BUG: script-src was 'self' only. The Google Fonts preload trick used
+    onload="this.onload=null;this.rel='stylesheet'" which is an inline event-handler —
+    blocked by CSP. Fonts never applied in any JS-enabled browser.
+
+    FIX A: Removed the broken preload+onload trick. Google Fonts now loads via a
+    plain <link rel="stylesheet"> (preconnect hints still give the speed benefit).
+
+    FIX B: Added sha256 hash for the anti-FOUC inline script (see FIX #2 below).
+    The hash was generated from the exact script text via:
+      echo -n '<script text>' | openssl dgst -sha256 -binary | openssl base64
+  -->
   <meta http-equiv="Content-Security-Policy"
         content="default-src 'self';
-                 script-src  'self';
+                 script-src  'self' 'sha256-6jHnK06YuUkqoFDERcXtiEOJ5guATGlEYpeC2S8CcNA=';
                  style-src   'self' https://fonts.googleapis.com 'unsafe-inline';
                  font-src    https://fonts.gstatic.com;
                  img-src     'self' data:;
@@ -42,22 +66,38 @@
   <title>Sidharth Vijayan Krishnan · Software Engineer</title>
 
   <!--
+    FIX #2 — Anti-FOUC (Flash of Unstyled Content) for dark mode
+    ─────────────────────────────────────────────────────────────
+    ORIGINAL BUG: data-theme="light" was hardcoded in the <html> tag. The main
+    script uses type="module" which is always deferred — it runs AFTER the browser
+    has already painted the page. Any user whose OS prefers dark mode (or who
+    previously selected dark) would see a flash of the light theme on every load.
+
+    FIX: This tiny inline script runs synchronously in <head>, before the first
+    paint, and sets data-theme from localStorage or OS preference. It is whitelisted
+    in the CSP via its sha256 hash. The try/catch guards against private-browsing
+    localStorage restrictions.
+
+    ⚠️  If you ever change even one character of this script you MUST recompute
+    the hash and update the CSP above. Command:
+      echo -n '<script content>' | openssl dgst -sha256 -binary | openssl base64
+  -->
+  <script>(function(){try{var t=localStorage.getItem("svk-portfolio-theme");if(t){document.documentElement.setAttribute("data-theme",t);}else if(window.matchMedia("(prefers-color-scheme:dark)").matches){document.documentElement.setAttribute("data-theme","dark");}}catch(e){}})();</script>
+
+  <!--
     Font system — Three roles:
       Space Grotesk → display headings
       Inter         → body copy
       DM Mono       → labels, kickers, mono elements
-    Non-blocking: rel="preload" + onload swap.
+
+    FIX #1 continued: Replaced the broken preload+onload trick with a plain
+    stylesheet link. The <link rel="preconnect"> hints still eliminate the DNS +
+    TLS handshake latency, giving nearly identical performance without the CSP issue.
   -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    rel="preload" as="style"
-    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap"
-    onload="this.onload=null;this.rel='stylesheet'"
-  />
-  <noscript>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" />
-  </noscript>
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" />
 
   <!-- Parallel preload for all three CSS files -->
   <link rel="preload" href="css/variables.css"  as="style" />
@@ -67,6 +107,55 @@
   <link rel="stylesheet" href="css/variables.css" />
   <link rel="stylesheet" href="css/layout.css" />
   <link rel="stylesheet" href="css/components.css" />
+
+  <!-- FIX #3 — JSON-LD structured data (Person + WebSite schemas) for rich SEO results -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Person",
+        "@id": "https://sidharthkris.github.io/#person",
+        "name": "Sidharth Vijayan Krishnan",
+        "url": "https://sidharthkris.github.io/",
+        "email": "sidharthvk80@gmail.com",
+        "jobTitle": "Software Engineer",
+        "description": "Software Engineer specialising in agent-based simulation, algorithms, and multi-agent systems.",
+        "sameAs": [
+          "https://www.linkedin.com/in/sidharth-vijayan-krishnan",
+          "https://github.com/Sidharthkris"
+        ],
+        "alumniOf": [
+          {
+            "@type": "CollegeOrUniversity",
+            "name": "Technische Universität Clausthal",
+            "url": "https://www.tu-clausthal.de/"
+          },
+          {
+            "@type": "CollegeOrUniversity",
+            "name": "Model Basin Institute of Technology and Science (MBITS), Kerala"
+          }
+        ],
+        "knowsAbout": [
+          "Agent-Based Modelling",
+          "Multi-Agent Systems",
+          "Java",
+          "Python",
+          "Software Test Automation",
+          "Algorithms",
+          "BDI Architecture"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://sidharthkris.github.io/#website",
+        "name": "Sidharth Vijayan Krishnan · Portfolio",
+        "url": "https://sidharthkris.github.io/",
+        "author": { "@id": "https://sidharthkris.github.io/#person" }
+      }
+    ]
+  }
+  </script>
 </head>
 
 <body>
@@ -593,8 +682,9 @@
               <span class="contact-link__arrow" aria-hidden="true">→</span>
             </a>
 
+            <!-- FIX #5 — Added rel="me" for IndieWeb identity verification -->
             <a href="https://www.linkedin.com/in/sidharth-vijayan-krishnan"
-               class="contact-link" target="_blank" rel="noopener noreferrer"
+               class="contact-link" target="_blank" rel="noopener noreferrer me"
                aria-label="Sidharth's LinkedIn profile (opens in new tab)">
               <span class="contact-link__icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="currentColor">
@@ -608,8 +698,9 @@
               <span class="contact-link__arrow" aria-hidden="true">→</span>
             </a>
 
+            <!-- FIX #5 — Added rel="me" for IndieWeb identity verification -->
             <a href="https://github.com/Sidharthkris"
-               class="contact-link" target="_blank" rel="noopener noreferrer"
+               class="contact-link" target="_blank" rel="noopener noreferrer me"
                aria-label="Sidharth's GitHub profile (opens in new tab)">
               <span class="contact-link__icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="currentColor">
