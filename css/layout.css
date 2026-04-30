@@ -1,0 +1,192 @@
+/* ═══════════════════════════════════════════════════════════════
+   layout.css — Structural layout, marquee strip, breakpoints
+   Depends on: variables.css
+═══════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────
+   4. LAYOUT UTILITIES
+───────────────────────────────────────── */
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--container-pad);
+}
+
+/* Sections: position:relative for ghost numerals (::after z-index:-1),
+   isolation:isolate creates stacking context so z-index:-1 stays within section */
+.section {
+  padding-block: clamp(4rem, 10vw, 7rem);
+  position: relative;
+  isolation: isolate;
+}
+
+/* CSS-native anchor offset — covers deep-links, find-in-page, before JS runs */
+section[id] {
+  scroll-margin-top: calc(var(--nav-height) + 16px);
+}
+
+/* Alternating section backgrounds — creates clear rhythm without explicit bg classes */
+.section:nth-of-type(even) { background: var(--color-bg-alt); }
+.section:nth-of-type(odd)  { background: var(--color-bg); }
+
+/* Section header row */
+.section__header {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-4);
+  margin-bottom: clamp(2.5rem, 6vw, 4rem);
+  position: relative;
+  z-index: 1;
+}
+
+.section__number {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  padding-top: 0.3em;
+}
+
+.section__title { font-size: clamp(2rem, 4vw, 3rem); }
+
+/* Ghost number — sits behind section content, purely decorative */
+.section[data-num]::after {
+  content: attr(data-num);
+  position: absolute;
+  right: var(--container-pad);
+  top: 1rem;
+  font-family: var(--font-display);
+  font-size: clamp(6rem, 16vw, 11rem);
+  font-weight: 700;
+  letter-spacing: -0.06em;
+  color: var(--color-accent);
+  opacity: 0.04;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+  z-index: -1;
+}
+
+/* ─────────────────────────────────────────
+   5. MARQUEE STRIP
+   Sits between the hero and the first section.
+   Pure CSS animation — no JS required.
+   Duplicated content in HTML for seamless loop.
+───────────────────────────────────────── */
+.marquee-strip {
+  overflow: hidden;
+  border-top:    1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg-alt);
+  padding-block: 0.85rem;
+  /* Prevent flash of unstyled content */
+  position: relative;
+  z-index: 10;
+}
+
+.marquee-track {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  width: max-content;
+  will-change: transform;
+  animation: marqueeScroll 38s linear infinite;
+}
+/* Slow down when user is focused elsewhere */
+.marquee-strip:hover .marquee-track { animation-play-state: paused; }
+
+@keyframes marqueeScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.marquee-item {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-ink-3);
+  white-space: nowrap;
+  padding-inline: 1.5rem;
+  transition: color 0.2s;
+}
+.marquee-item:hover { color: var(--color-accent); }
+
+/* Separator dot between items */
+.marquee-sep {
+  color: var(--color-accent);
+  font-size: 0.5rem;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+/* ─────────────────────────────────────────
+   6. SCROLL REVEAL SYSTEM
+───────────────────────────────────────── */
+.js-reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity   0.7s var(--ease-out),
+    transform 0.7s var(--ease-out);
+  transition-delay: var(--delay, 0s);
+}
+.js-reveal.is-visible { opacity: 1; transform: translateY(0); }
+
+/* ─────────────────────────────────────────
+   7. RESPONSIVE BREAKPOINTS
+───────────────────────────────────────── */
+
+/* Tablet — ≤ 900px */
+@media (max-width: 900px) {
+  .nav__links     { display: none; }
+  .nav__hamburger { display: flex; }
+
+  .about__grid    { grid-template-columns: 1fr; }
+  .stats-row      { grid-template-columns: repeat(3, 1fr); }
+  .projects-grid  { grid-template-columns: 1fr; }
+  .contact__grid  { grid-template-columns: 1fr; }
+  .site-footer__inner { flex-direction: column; text-align: center; }
+}
+
+/* Intermediate — ≤ 768px */
+@media (max-width: 768px) {
+  .stat { padding: var(--space-6) var(--space-4); }
+  .contact__lead { font-size: clamp(1.25rem, 4vw, 1.75rem); }
+}
+
+/* Mobile — ≤ 600px */
+@media (max-width: 600px) {
+  .hero__name             { font-size: clamp(3rem, 14vw, 5rem); }
+  .hero__scroll-indicator { display: none; }
+  .stats-row              { grid-template-columns: 1fr; }
+  .hero__cta-group        { flex-direction: column; }
+  .btn                    { justify-content: center; }
+  .about__detail-row      { grid-template-columns: 1fr; gap: var(--space-1); }
+
+  .exp-list         { padding-left: 0; }
+  .exp-list::before { display: none; }
+  .exp-card::before { display: none; }
+}
+
+/* Wide — ≥ 1400px */
+@media (min-width: 1400px) {
+  :root { --container-max: 1320px; }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration:        0.01ms !important;
+    transition-duration:       0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+  html { scroll-behavior: auto; }
+  .cursor-glow    { display: none !important; }
+  .scroll-progress { transition: none !important; }
+  .marquee-track  { animation: none; }
+}
