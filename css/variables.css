@@ -2,14 +2,7 @@
    variables.css — Design tokens, reset, base typography
    ─────────────────────────────────────────────────────────────
    Color system: Figma "Ink Wash" (#8) + Deep Teal accent
-   Source: figma.com/resource-library/color-combinations/
    ─────────────────────────────────────────────────────────────
-   Combination #8 — Ink Wash
-   "Charcoal black, cool gray, and soft ivory come together
-    in an ink wash combination that embodies simplicity and
-    high contrast. Its refined balance is ideal for design
-    portfolios seeking a gallery-like feel."
-
    Palette:
      Ivory    #F5F4EE  — background, warm paper feel
      Charcoal #18181A  — primary text, rich ink
@@ -19,24 +12,33 @@
      Deep Teal  #0D7377  — electric but grounded
      Bright Teal #14B8A6 — gradients, highlights
    ─────────────────────────────────────────────────────────────
-   Typography: Space Grotesk · Inter · DM Mono (unchanged)
+   Typography: Space Grotesk · Inter · DM Mono
 ═══════════════════════════════════════════════════════════════ */
 
 /* ─────────────────────────────────────────
    1. DESIGN TOKENS — LIGHT (Ink Wash)
 ───────────────────────────────────────── */
 :root {
+  /* FIX #11 — Declare colour scheme so the browser knows this element supports
+     both light and dark. Enables preemptive dark-mode scrollbar styling and
+     browser-level dark-mode UI before any JS or CSS custom property runs. */
+  color-scheme: light dark;
+
+  /* FIX #12 — accent-color applies to native form controls (checkboxes, radios,
+     range, progress) so they match the portfolio's teal theme. */
+  accent-color: #0D7377;
+
   /* ── Ink Wash palette ── */
-  --color-bg:          #F5F4EE;   /* warm ivory — sumi paper */
-  --color-bg-alt:      #ECEAE3;   /* slightly deeper ivory */
+  --color-bg:          #F5F4EE;
+  --color-bg-alt:      #ECEAE3;
   --color-surface:     #FFFFFF;
-  --color-ink:         #18181A;   /* rich charcoal — like sumi ink */
-  --color-ink-2:       #57554F;   /* warm gray */
-  --color-ink-3:       #9A9890;   /* muted mist */
+  --color-ink:         #18181A;
+  --color-ink-2:       #57554F;
+  --color-ink-3:       #9A9890;
 
   /* ── Teal accent system ── */
-  --color-accent:      #0D7377;   /* deep teal — primary accent */
-  --color-accent-2:    #14B8A6;   /* bright teal — gradients, highlights */
+  --color-accent:      #0D7377;
+  --color-accent-2:    #14B8A6;
   --color-accent-soft: rgba(13, 115, 119, 0.08);
   --color-accent-mid:  rgba(13, 115, 119, 0.20);
   --color-accent-glow: rgba(13, 115, 119, 0.18);
@@ -87,20 +89,20 @@
 
 /* ─────────────────────────────────────────
    DARK MODE — Ink Wash Dark
-   Inverts the ivory→charcoal axis:
-   near-black bg, warm ivory text.
-   Teal accent lightens for dark-canvas legibility.
 ───────────────────────────────────────── */
 [data-theme="dark"] {
-  --color-bg:          #0C0C0F;   /* near-black, slight cool cast */
+  color-scheme: dark;
+  accent-color: #2DD4BF;
+
+  --color-bg:          #0C0C0F;
   --color-bg-alt:      #131318;
   --color-surface:     #1B1B20;
 
-  --color-ink:         #F0EFE8;   /* warm ivory text */
-  --color-ink-2:       #A5A49C;   /* muted ivory gray */
-  --color-ink-3:       #5C5B53;   /* dim mist */
+  --color-ink:         #F0EFE8;
+  --color-ink-2:       #A5A49C;
+  --color-ink-3:       #5C5B53;
 
-  --color-accent:      #2DD4BF;   /* bright teal for dark bg */
+  --color-accent:      #2DD4BF;
   --color-accent-2:    #0D7377;
   --color-accent-soft: rgba(45, 212, 191, 0.08);
   --color-accent-mid:  rgba(45, 212, 191, 0.22);
@@ -121,9 +123,14 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html {
-  font-size: 16px;
+  /* FIX #10 — WCAG 1.4.4 Resize Text: using 16px here overrides the user's
+     browser font-size preference (e.g. someone who has set 20px in accessibility
+     settings). Using 100% respects that preference while still letting all
+     rem-based sizes scale correctly from it. */
+  font-size: 100%;
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
