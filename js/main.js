@@ -516,6 +516,143 @@ const ReadingProgress = (() => {
 })();
 
 /* ─────────────────────────────────────────
+   8.7 AGENT-BASED HERO ANIMATION
+   Custom particle engine simulating multi-agent proximity.
+   Skips rendering if prefers-reduced-motion is active.
+───────────────────────────────────────── */
+const AgentSimulation = (() => {
+  const canvas = document.getElementById('heroCanvas');
+  let ctx, width, height, animationId;
+  let agents = [];
+  const NUM_AGENTS = 55;
+  const CONNECTION_DISTANCE = 110;
+
+  class Agent {
+    constructor() {
+      this.x = Math.random() * width;
+      this.y = Math.random() * height;
+      // Random velocity
+      this.vx = (Math.random() - 0.5) * 1.2;
+      this.vy = (Math.random() - 0.5) * 1.2;
+      this.radius = 2;
+    }
+
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      // Bounce off walls
+      if (this.x <= 0 || this.x >= width) this.vx *= -1;
+      if (this.y <= 0 || this.y >= height) this.vy *= -1;
+    }
+
+    draw(isDark) {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fillStyle = isDark ? 'rgba(159, 239, 0, 0.6)' : 'rgba(184, 64, 48, 0.5)';
+      ctx.fill();
+    }
+  }
+
+  const resize = () => {
+    if (!canvas) return;
+    width = canvas.parentElement.offsetWidth;
+    height = canvas.parentElement.offsetHeight;
+    canvas.width = width;
+    canvas.height = height;
+  };
+
+  const initAgents = () => {
+    agents = [];
+    for (let i = 0; i < NUM_AGENTS; i++) agents.push(new Agent());
+  };
+
+  const drawConnections = (isDark) => {
+    for (let i = 0; i < agents.length; i++) {
+      for (let j = i + 1; j < agents.length; j++) {
+        const dx = agents[i].x - agents[j].x;
+        const dy = agents[i].y - agents[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < CONNECTION_DISTANCE) {
+          ctx.beginPath();
+          ctx.moveTo(agents[i].x, agents[i].y);
+          ctx.lineTo(agents[j].x, agents[j].y);
+          const alpha = 1 - (dist / CONNECTION_DISTANCE); // Fades out as they get further apart
+          ctx.strokeStyle = isDark 
+            ? `rgba(159, 239, 0, ${alpha * 0.25})` 
+            : `rgba(184, 64, 48, ${alpha * 0.15})`;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+    }
+  };
+
+  const animate = () => {
+    ctx.clearRect(0, 0, width, height);
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    
+    agents.forEach(agent => {
+      agent.update();
+      agent.draw(isDark);
+    });
+    
+    drawConnections(isDark);
+    animationId = requestAnimationFrame(animate);
+  };
+
+  const init = () => {
+    if (!canvas || prefersReducedMotion()) return;
+    ctx = canvas.getContext('2d');
+    
+    resize();
+    initAgents();
+    animate();
+    
+    window.addEventListener('resize', rafThrottle(resize));
+  };
+
+  return { init };
+})();
+
+
+/* ─────────────────────────────────────────
+   8.8 CLICK-TO-COPY EMAIL
+   Intercepts mailto link to copy to clipboard instead.
+───────────────────────────────────────── */
+const CopyEmail = (() => {
+  const emailBtn = document.getElementById('emailCopyBtn');
+  const emailText = 'sidharthvk80@gmail.com';
+
+  const init = () => {
+    if (!emailBtn) return;
+
+    emailBtn.addEventListener('click', async (e) => {
+      e.preventDefault(); // Stops the default mail client from opening
+      
+      try {
+        await navigator.clipboard.writeText(emailText);
+        
+        // Trigger CSS animation
+        emailBtn.classList.add('is-copied');
+        const tooltip = emailBtn.querySelector('.contact-link__tooltip');
+        if (tooltip) tooltip.textContent = 'Copied!';
+        
+        // Reset after 2 seconds
+        setTimeout(() => {
+          emailBtn.classList.remove('is-copied');
+          if (tooltip) tooltip.textContent = 'Copy';
+        }, 2000);
+      } catch (err) {
+        console.error('Failed to copy email: ', err);
+      }
+    });
+  };
+
+  return { init };
+})();
+
+/* ─────────────────────────────────────────
    9. BOOTSTRAP
    Wires all modules. The module type attr auto-defers
    this script — DOMContentLoaded guard is belt-and-braces.
@@ -530,7 +667,9 @@ const bootstrap = () => {
   FooterYear.init();
   KeyboardA11y.init();
   ScrollToTop.init(); 
-  ReadingProgress.init();
+  ReadingProgress.init(); 
+  AgentSimulation.init();
+  CopyEmail.init();
 };
 
 if (document.readyState === 'loading') {
