@@ -1,0 +1,216 @@
+/* ═══════════════════════════════════════════════════════════════
+   layout.css — Structural layout utilities and responsive breakpoints
+   Depends on: variables.css
+
+   ENHANCEMENTS v2:
+   • Skip-to-content link for keyboard accessibility
+   • scroll-margin-top on sections (fixes anchor offset behind fixed nav)
+   • Print stylesheet — clean single-column layout
+   • Improved section spacing with fluid clamp values
+═══════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────
+   4. SKIP LINK
+   Visually hidden until focused — allows keyboard and
+   screen-reader users to skip over the navigation directly
+   to the main content. WCAG 2.1 Success Criterion 2.4.1.
+───────────────────────────────────────── */
+.skip-link {
+  position: fixed;
+  top: var(--space-4);
+  left: var(--space-4);
+  z-index: 9999;
+  background: var(--color-accent);
+  color: var(--color-bg);
+  font-size: 0.875rem;
+  font-weight: 700;
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  /* Off-screen by default */
+  transform: translateY(-200%);
+  transition: transform 0.2s var(--ease-out);
+}
+.skip-link:focus {
+  transform: translateY(0);
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+/* ─────────────────────────────────────────
+   5. LAYOUT UTILITIES
+   Container, section wrapper, and section header
+   used by every content section.
+───────────────────────────────────────── */
+
+/* Centred, max-width content column */
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--container-pad);
+}
+
+/* Consistent vertical rhythm between sections */
+.section { padding-block: clamp(4rem, 10vw, 7rem); }
+
+/* Anchor offset — compensates for fixed nav so section headings
+   are not hidden behind the navbar when navigating via anchor links.
+   scroll-margin-top is the modern, CSS-only solution. */
+section[id] {
+  scroll-margin-top: calc(var(--nav-height) + 1rem);
+}
+
+/* Section heading row — number badge + title sit on shared baseline */
+.section__header {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-4);
+  margin-bottom: clamp(2.5rem, 6vw, 4rem);
+}
+
+/* Mono-spaced ordinal counter (01, 02, 03 …) */
+.section__number {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  padding-top: 0.3em;
+}
+
+/* Section title — fluid size so it never wraps awkwardly */
+.section__title {
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+/* ─────────────────────────────────────────
+   6. SCROLL REVEAL SYSTEM
+   .js-reveal elements start hidden; .is-visible triggers CSS transition.
+   CSS custom property --delay staggers each element independently.
+   JS adds is-visible via IntersectionObserver (see main.js).
+───────────────────────────────────────── */
+.js-reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity   0.7s var(--ease-out),
+    transform 0.7s var(--ease-out);
+  transition-delay: var(--delay, 0s);
+}
+
+.js-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─────────────────────────────────────────
+   7. RESPONSIVE BREAKPOINTS
+───────────────────────────────────────── */
+
+/* Tablet — ≤ 900px */
+@media (max-width: 900px) {
+  .nav__links      { display: none; }
+  .nav__hamburger  { display: flex; }
+  .nav__resume-btn { display: none; }
+
+  .about__grid     { grid-template-columns: 1fr; }
+  .stats-row       { grid-template-columns: repeat(3, 1fr); }
+  .projects-grid   { grid-template-columns: 1fr; }
+  .contact__grid   { grid-template-columns: 1fr; }
+  .site-footer__inner { flex-direction: column; text-align: center; }
+}
+
+/* Mobile — ≤ 600px */
+@media (max-width: 600px) {
+  .hero__name              { font-size: clamp(3rem, 14vw, 5rem); }
+  .hero__scroll-indicator  { display: none; }
+  .stats-row               { grid-template-columns: 1fr; }
+  .hero__cta-group         { flex-direction: column; }
+  .btn                     { justify-content: center; }
+  .about__detail-row       { grid-template-columns: 1fr; gap: var(--space-1); }
+}
+
+/* Wide screens — ≥ 1400px */
+@media (min-width: 1400px) {
+  :root { --container-max: 1320px; }
+}
+
+/* Reduced motion — honours OS/browser accessibility preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration:        0.01ms !important;
+    transition-duration:       0.01ms !important;
+    animation-iteration-count: 1      !important;
+  }
+  html { scroll-behavior: auto; }
+  .js-reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ─────────────────────────────────────────
+   8. PRINT STYLESHEET
+   Clean single-column layout for CV-style printing.
+   Removes navigation, animations, backgrounds, and
+   expands links to show full URLs.
+───────────────────────────────────────── */
+@media print {
+  /* Reset backgrounds and remove decorative elements */
+  body {
+    background: #fff !important;
+    color: #000 !important;
+    font-size: 11pt;
+    line-height: 1.5;
+  }
+
+  /* Hide non-essential elements */
+  .site-header,
+  .hero__scroll-indicator,
+  .hero__cta-group,
+  .skip-link,
+  .theme-toggle,
+  .nav__hamburger,
+  .mobile-menu,
+  .hero::before,
+  .hero::after {
+    display: none !important;
+  }
+
+  /* Ensure all content is visible — bypass reveal animations */
+  .js-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* Full-width single column */
+  .container { max-width: 100%; padding: 0; }
+  .about__grid,
+  .projects-grid,
+  .contact__grid { grid-template-columns: 1fr; }
+
+  /* Section spacing */
+  .section { padding-block: 1.5rem; }
+
+  /* Show full URLs next to links */
+  a[href]::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.8em;
+    color: #555;
+  }
+  /* But skip internal anchors */
+  a[href^="#"]::after { content: ''; }
+
+  /* Page breaks */
+  .exp-card, .project-card { page-break-inside: avoid; }
+  h2, h3 { page-break-after: avoid; }
+
+  /* Remove card borders/shadows — paper already separates content */
+  .exp-card,
+  .project-card {
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+  }
+}
