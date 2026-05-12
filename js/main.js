@@ -97,7 +97,7 @@ const ThemeManager = (() => {
 /* ─────────────────────────────────────────
    2. NAVIGATION MANAGER
    a) Compact nav on scroll
-   b) Active link tracking + aria-current="page"
+   b) Active link tracking via IntersectionObserver (Upgraded!)
    c) Mobile menu (open/close/Escape/resize)
 ───────────────────────────────────────── */
 const NavigationManager = (() => {
@@ -113,22 +113,14 @@ const NavigationManager = (() => {
   /* ── a) Compact nav ── */
   const onScroll = rafThrottle(() => {
     NAV?.classList.toggle('is-compact', window.scrollY > THRESHOLD);
-    updateActiveLink();
   });
 
-  /* ── b) Active link + aria-current ── */
-  const updateActiveLink = () => {
-    let currentId = '';
-
-    SECTIONS.forEach((section) => {
-      const sectionTop = section.offsetTop - 120;
-      if (window.scrollY >= sectionTop) currentId = section.id;
-    });
-
+  /* ── b) Active link + aria-current (Observer) ── */
+  const setActiveLink = (id) => {
     NAV_LINKS.forEach((link) => {
-      const isActive = link.getAttribute('href') === `#${currentId}`;
+      const isActive = link.getAttribute('href') === `#${id}`;
       link.classList.toggle('is-active', isActive);
-      // aria-current="page" communicates active state to screen readers
+      
       if (isActive) {
         link.setAttribute('aria-current', 'page');
       } else {
@@ -137,12 +129,30 @@ const NavigationManager = (() => {
     });
   };
 
+  const initObserver = () => {
+    // Triggers when a section passes the middle of the screen
+    const options = {
+      root: null,
+      rootMargin: '-20% 0px -60% 0px', 
+      threshold: 0
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveLink(entry.target.id);
+        }
+      });
+    }, options);
+
+    SECTIONS.forEach((section) => observer.observe(section));
+  };
+
   /* ── c) Mobile menu ── */
   const toggleMobile = () => {
     isMobileOpen = !isMobileOpen;
     HAMBURGER?.setAttribute('aria-expanded', String(isMobileOpen));
     if (MOBILE_MENU) MOBILE_MENU.hidden = !isMobileOpen;
-    // Move focus into menu when opened
     if (isMobileOpen) {
       const firstLink = MOBILE_MENU?.querySelector('.mobile-menu__link');
       firstLink?.focus();
@@ -154,7 +164,6 @@ const NavigationManager = (() => {
     isMobileOpen = false;
     HAMBURGER?.setAttribute('aria-expanded', 'false');
     if (MOBILE_MENU) MOBILE_MENU.hidden = true;
-    // Return focus to hamburger button
     HAMBURGER?.focus();
   };
 
@@ -177,12 +186,12 @@ const NavigationManager = (() => {
       if (e.matches) closeMobile();
     });
 
-    updateActiveLink();
+    // Start the observer
+    initObserver();
   };
 
   return { init };
 })();
-
 
 /* ─────────────────────────────────────────
    3. SCROLL REVEAL
@@ -479,6 +488,34 @@ const ScrollToTop = (() => {
 })();
 
 /* ─────────────────────────────────────────
+   8.6 READING PROGRESS BAR
+   Updates the width of the top progress bar.
+───────────────────────────────────────── */
+const ReadingProgress = (() => {
+  const progressBar = document.getElementById('progressBar');
+
+  const updateProgress = rafThrottle(() => {
+    if (!progressBar) return;
+    
+    // Calculate how far down the user has scrolled relative to the total scrollable area
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    
+    // Prevent division by zero on very short pages
+    if (docHeight === 0) return;
+    
+    const progress = (scrollTop / docHeight) * 100;
+    progressBar.style.width = `${progress}%`;
+  });
+
+  const init = () => {
+    window.addEventListener('scroll', updateProgress, { passive: true });
+  };
+
+  return { init };
+})();
+
+/* ─────────────────────────────────────────
    9. BOOTSTRAP
    Wires all modules. The module type attr auto-defers
    this script — DOMContentLoaded guard is belt-and-braces.
@@ -492,7 +529,8 @@ const bootstrap = () => {
   TypingEffect.init();
   FooterYear.init();
   KeyboardA11y.init();
-  ScrollToTop.init();
+  ScrollToTop.init(); 
+  ReadingProgress.init();
 };
 
 if (document.readyState === 'loading') {
