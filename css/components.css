@@ -379,6 +379,17 @@
   -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
 }
 
+/* Agent-based Canvas Animation */
+.hero__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none; /* Allows user to click buttons through the canvas */
+  opacity: 0.8;
+}
+
 .hero__inner {
   position: relative;
   z-index: 1;
@@ -910,6 +921,43 @@ dd {
 .contact-link:hover .contact-link__arrow {
   transform: translateX(4px);
   color: var(--color-accent);
+}
+
+/* Click-to-copy Tooltip */
+.contact-link {
+  position: relative; /* Ensures absolute tooltip stays inside the button */
+}
+
+.contact-link__tooltip {
+  position: absolute;
+  right: var(--space-4);
+  background: var(--color-ink);
+  color: var(--color-bg);
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 700;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: all var(--transition-base);
+  pointer-events: none;
+}
+
+/* When Javascript adds the 'is-copied' class */
+.contact-link.is-copied .contact-link__tooltip {
+  opacity: 1;
+  transform: translateY(0);
+  background: var(--color-accent);
+}
+
+.contact-link.is-copied .contact-link__arrow {
+  opacity: 0; /* Hides the arrow to make room for the tooltip */
+}
+
+/* HTB Dark Mode support for tooltip */
+[data-theme="dark"] .contact-link.is-copied .contact-link__tooltip {
+  color: #141d2b;
+  box-shadow: 0 0 12px rgba(159, 239, 0, 0.4);
 }
 
 /* ─────────────────────────────────────────
