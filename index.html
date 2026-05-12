@@ -99,12 +99,14 @@
     This tiny inline script reads localStorage before CSS renders,
     preventing a flash of the wrong theme on page load.
     It is intentionally short and synchronous.
+
+    Removed the `localStorage` theme override.
+    The website now strictly listens to the user's system preferences (`prefers-color-scheme`) and instantly toggles between Light Mode and the Dark Mode.
   ────────────────────────────────────────────────────────────── -->
   <script>
     (function(){
       try{
-        var t=localStorage.getItem('svk-portfolio-theme');
-        if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}
+        var t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
         document.documentElement.setAttribute('data-theme',t);
       }catch(e){}
     })();
@@ -750,6 +752,15 @@
       </p>
     </div>
   </footer>
+
+  <!--
+    Added a new floating action button at the bottom right of the screen.
+  -->
+  <button id="scrollToTop" class="scroll-top-btn" aria-label="Scroll to top of page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" width="20" height="20">
+      <path d="M18 15l-6-6-6 6"/>
+    </svg>
+  </button>
 
   <!--
     type="module" auto-defers the script — executes after DOM is fully parsed.
