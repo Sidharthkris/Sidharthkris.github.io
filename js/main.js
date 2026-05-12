@@ -51,23 +51,17 @@ const rafThrottle = (fn) => {
 
 /* ─────────────────────────────────────────
    1. THEME MANAGER
-   Persists user preference in localStorage.
-   Falls back to OS prefers-color-scheme.
-   Applies theme by setting [data-theme] on <html>.
+   Strictly tracks browser/OS prefers-color-scheme.
 ───────────────────────────────────────── */
 const ThemeManager = (() => {
   const ROOT        = document.documentElement;
-  const STORAGE_KEY = 'svk-portfolio-theme';
   const TOGGLE_BTN  = document.getElementById('themeToggle');
 
   const getPreferred = () =>
     window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 
-  const getSaved = () => localStorage.getItem(STORAGE_KEY);
-
   const apply = (theme) => {
     ROOT.setAttribute('data-theme', theme);
-    try { localStorage.setItem(STORAGE_KEY, theme); } catch (_) { /* storage unavailable */ }
     if (TOGGLE_BTN) {
       TOGGLE_BTN.setAttribute(
         'aria-label',
@@ -83,20 +77,22 @@ const ThemeManager = (() => {
   };
 
   const init = () => {
-    const theme = getSaved() ?? getPreferred();
-    apply(theme);
+    // Apply OS preference on load
+    apply(getPreferred());
+    
+    // Allow manual toggle, but it won't save permanently
     TOGGLE_BTN?.addEventListener('click', toggle);
 
+    // Listen to OS theme changes and update instantly
     window
       .matchMedia('(prefers-color-scheme: dark)')
       .addEventListener('change', (e) => {
-        if (!getSaved()) apply(e.matches ? 'dark' : 'light');
+        apply(e.matches ? 'dark' : 'light');
       });
   };
 
   return { init };
 })();
-
 
 /* ─────────────────────────────────────────
    2. NAVIGATION MANAGER
@@ -449,6 +445,38 @@ const KeyboardA11y = (() => {
   return { init };
 })();
 
+/* ─────────────────────────────────────────
+   8.5 SCROLL TO TOP BUTTON
+   Shows button after scrolling, scrolls up smoothly on click.
+───────────────────────────────────────── */
+const ScrollToTop = (() => {
+  const btn = document.getElementById('scrollToTop');
+
+  const init = () => {
+    if (!btn) return;
+
+    // Show/hide based on scroll distance (shows after 500px)
+    window.addEventListener('scroll', rafThrottle(() => {
+      if (window.scrollY > 500) {
+        btn.classList.add('is-visible');
+      } else {
+        btn.classList.remove('is-visible');
+      }
+    }), { passive: true });
+
+    // Scroll to top smoothly
+    btn.addEventListener('click', () => {
+      // Respect reduced motion settings if enabled
+      if (prefersReducedMotion()) {
+        window.scrollTo({ top: 0 });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });
+  };
+
+  return { init };
+})();
 
 /* ─────────────────────────────────────────
    9. BOOTSTRAP
@@ -464,6 +492,7 @@ const bootstrap = () => {
   TypingEffect.init();
   FooterYear.init();
   KeyboardA11y.init();
+  ScrollToTop.init();
 };
 
 if (document.readyState === 'loading') {
