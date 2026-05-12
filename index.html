@@ -212,6 +212,7 @@
          HERO
     ═══════════════════════════════════════ -->
     <section class="hero" id="hero" aria-label="Introduction">
+      <canvas id="heroCanvas" class="hero__canvas" aria-hidden="true"></canvas>
       <div class="hero__inner container">
         <div class="hero__kicker">
           <span class="hero__kicker-line" aria-hidden="true"></span>
@@ -681,7 +682,8 @@
             <a
               href="mailto:sidharthvk80@gmail.com"
               class="contact-link"
-              aria-label="Send an email to Sidharth"
+              id="emailCopyBtn"
+              aria-label="Copy email address to clipboard"
             >
               <span class="contact-link__icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -692,7 +694,9 @@
                 <span class="contact-link__label">Email</span>
                 <span class="contact-link__value">sidharthvk80@gmail.com</span>
               </span>
+              
               <span class="contact-link__arrow" aria-hidden="true">→</span>
+              <span class="contact-link__tooltip" aria-hidden="true">Copy</span>
             </a>
 
             <a
