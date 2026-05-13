@@ -127,10 +127,10 @@
       <a href="#hero" class="nav__logo" aria-label="Home — SVK Portfolio">SVK</a>
 
       <ul class="nav__links" role="list">
-        <li><a href="#about"      class="nav__link">About</a></li>
-        <li><a href="#projects"   class="nav__link">Projects</a></li>
-        <li><a href="#experience" class="nav__link">Experience</a></li>
-        <li><a href="#contact"    class="nav__link">Contact</a></li>
+        <li><a href="#about"      class="nav__link" data-num="01">About</a></li>
+        <li><a href="#projects"   class="nav__link" data-num="02">Projects</a></li>
+        <li><a href="#experience" class="nav__link" data-num="03">Experience</a></li>
+        <li><a href="#contact"    class="nav__link" data-num="04">Contact</a></li>
       </ul>
 
       <div class="nav__actions">
@@ -173,11 +173,12 @@
         >
           <span class="nav__hamburger-line"></span>
           <span class="nav__hamburger-line"></span>
+          <span class="nav__hamburger-line"></span>
         </button>
       </div>
     </nav>
 
-    <!-- Mobile navigation drawer -->
+    <!-- Mobile navigation overlay -->
     <div
       class="mobile-menu"
       id="mobileMenu"
@@ -186,12 +187,19 @@
       aria-label="Mobile navigation"
       hidden
     >
+      <!-- Close button -->
+      <button class="mobile-menu__close" id="mobileClose" aria-label="Close navigation menu">
+        <span class="mobile-menu__close-line"></span>
+        <span class="mobile-menu__close-line"></span>
+      </button>
+
       <ul class="mobile-menu__links" role="list">
-        <li><a href="#about"      class="mobile-menu__link">About</a></li>
-        <li><a href="#projects"   class="mobile-menu__link">Projects</a></li>
-        <li><a href="#experience" class="mobile-menu__link">Experience</a></li>
-        <li><a href="#contact"    class="mobile-menu__link">Contact</a></li>
+        <li class="mobile-menu__item"><a href="#about"      class="mobile-menu__link"><em class="mobile-menu__num">01.</em>About</a></li>
+        <li class="mobile-menu__item"><a href="#projects"   class="mobile-menu__link"><em class="mobile-menu__num">02.</em>Projects</a></li>
+        <li class="mobile-menu__item"><a href="#experience" class="mobile-menu__link"><em class="mobile-menu__num">03.</em>Experience</a></li>
+        <li class="mobile-menu__item"><a href="#contact"    class="mobile-menu__link"><em class="mobile-menu__num">04.</em>Contact</a></li>
       </ul>
+
       <a
         href="assets/Sidharth_Vijayan_Krishnan_CV.pdf"
         class="mobile-menu__resume btn btn--resume"
