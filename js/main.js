@@ -104,6 +104,7 @@ const NavigationManager = (() => {
   const NAV         = document.querySelector('.nav');
   const HAMBURGER   = document.getElementById('hamburger');
   const MOBILE_MENU = document.getElementById('mobileMenu');
+  const CLOSE_BTN   = document.getElementById('mobileClose');
   const NAV_LINKS   = document.querySelectorAll('.nav__link');
   const SECTIONS    = document.querySelectorAll('section[id]');
   const THRESHOLD   = 60;
@@ -154,8 +155,8 @@ const NavigationManager = (() => {
     HAMBURGER?.setAttribute('aria-expanded', String(isMobileOpen));
     if (MOBILE_MENU) MOBILE_MENU.hidden = !isMobileOpen;
     if (isMobileOpen) {
-      const firstLink = MOBILE_MENU?.querySelector('.mobile-menu__link');
-      firstLink?.focus();
+      // Focus the close button so keyboard users can dismiss immediately
+      requestAnimationFrame(() => CLOSE_BTN?.focus());
     }
   };
 
@@ -170,6 +171,7 @@ const NavigationManager = (() => {
   const init = () => {
     window.addEventListener('scroll', onScroll, { passive: true });
     HAMBURGER?.addEventListener('click', toggleMobile);
+    CLOSE_BTN?.addEventListener('click', closeMobile);
 
     MOBILE_MENU?.querySelectorAll('.mobile-menu__link').forEach((link) => {
       link.addEventListener('click', closeMobile);
