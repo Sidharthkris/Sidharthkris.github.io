@@ -31,16 +31,6 @@
 └── assets/          → résumé, images
 ```
 
-## 🚀 Run it locally
-
-```bash
-git clone https://github.com/Sidharthkris/sidharthkris.github.io.git
-cd sidharthkris.github.io
-python3 -m http.server 8000
-```
-
-Open `localhost:8000` — that's it.
-
 ## 📄 License
 
 MIT — see [LICENSE](LICENSE).
