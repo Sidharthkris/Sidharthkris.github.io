@@ -1,6 +1,6 @@
 # sidharthkris.github.io
 
-Personal site of **Sidharth Vijayan Krishnan**, software engineer. Built with
+Personal site of **Me**. Built with
 Astro, static output, no client framework.
 
 ## Art direction — "Press"
@@ -20,15 +20,6 @@ switch rather than from decoration — you always know which register you are in
 The dark register is implemented by a single `.dark` class that reassigns the
 colour tokens, so every component inside works on both grounds without a second
 set of rules.
-
-## Content
-
-Everything traces to the CV, LinkedIn, or a public repository. It lives in
-`src/data/content.ts`; adding a project is one entry in `projects`.
-
-**Deliberately absent:** location and spoken languages. Only verified, publicly
-reachable destinations are linked — email, LinkedIn, GitHub, CV. The JSON-LD
-carries no postal address and no language list.
 
 ## Develop
 
