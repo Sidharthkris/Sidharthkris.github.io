@@ -1,0 +1,405 @@
+---
+import Base from '../layouts/Base.astro';
+import { profile, statement, deck, projects, archive, trajectory, instruments, links } from '../data/content';
+
+const featured = projects.filter((p) => p.featured);
+const rest = projects.filter((p) => !p.featured);
+---
+
+<Base
+  title="Sidharth Vijayan Krishnan — Software Engineer"
+  description="Java and Spring Boot services, React front ends, and agent-based simulation. Selected work and professional background of Sidharth Vijayan Krishnan, M.Sc. Computer Science, TU Clausthal."
+>
+
+  <!-- ══════════ OPENING ══════════ -->
+  <section class="open">
+    <div class="wrap">
+      <p class="mono open__meta in">
+        <span>{profile.name}</span><span aria-hidden="true">·</span>
+        <span>{profile.role}</span><span aria-hidden="true">·</span>
+        <span>{profile.discipline}</span>
+      </p>
+
+      <h1 class="d d1 open__h">
+        {statement.map((l, i) => (
+          <span class="slot" style={`--d:${0.05 + i * 0.09}s`}><span>{l}</span></span>
+        ))}
+      </h1>
+
+      <div class="open__foot">
+        <p class="lede in" style="--d:.44s">{deck}</p>
+        <div class="in open__acts" style="--d:.56s">
+          <a class="act act--fill" href="#work">See the work</a>
+          <a class="act" href={profile.cv} download>CV (PDF)</a>
+        </div>
+      </div>
+    </div>
+    <div class="wrap open__hr"><span class="hr wipe" style="--d:.7s"></span></div>
+  </section>
+
+  <!-- ══════════ WORK — ink register ══════════ -->
+  <section class="chapter dark" id="work">
+    <div class="wrap">
+      <div class="hang">
+        <div class="hang__label">
+          <span class="mono mono--ink">Work</span>
+          <span class="mono">{projects.length} systems</span>
+        </div>
+        <h2 class="d d2 in work__h">
+          Two kinds of system, and what it takes to be trusted by either.
+        </h2>
+      </div>
+
+      {featured.map((p) => (
+        <article class="lead" id={p.id}>
+          <div class="lead__rule wipe"></div>
+          <div class="lead__top">
+            <span class="lead__n" aria-hidden="true">{p.n}</span>
+            <div class="lead__id">
+              <p class="mono">{p.year} · {p.kind}</p>
+              <h3 class="d d1 lead__t in">{p.title}</h3>
+              <p class="mono lead__track">
+                <span class="dot" aria-hidden="true"></span>
+                {p.track === 'emergent' ? 'Emergent behaviour' : 'Deterministic enforcement'}
+              </p>
+            </div>
+          </div>
+
+          <div class="lead__grid">
+            <div>
+              <p class="lede lead__sum in">{p.summary}</p>
+              <dl class="facts in">
+                {p.facts?.map((f) => (<div><dt class="mono">{f.k}</dt><dd class="d4">{f.v}</dd></div>))}
+              </dl>
+              {p.role && <p class="mono lead__role in">Role — {p.role}</p>}
+            </div>
+            <div class="pao in" style="--d:.08s">
+              <div><p class="mono">Problem</p><p>{p.problem}</p></div>
+              <div><p class="mono">Approach</p><p>{p.approach}</p></div>
+              <div><p class="mono">Outcome</p><p>{p.outcome}</p></div>
+            </div>
+          </div>
+
+          <ul class="chips in">{p.stack.map((s) => (<li>{s}</li>))}</ul>
+
+          {p.links && (
+            <p class="outs in">
+              {p.links.map((l) => (
+                <a class="out" href={l.href} target="_blank" rel="noopener noreferrer">{l.label} <span aria-hidden="true">↗</span></a>
+              ))}
+            </p>
+          )}
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <!-- ══════════ MORE WORK — paper register ══════════ -->
+  <section class="chapter after-dark">
+    <div class="wrap">
+      <div class="mores">
+        {rest.map((p) => (
+          <article class="more" id={p.id}>
+            <span class="more__n" aria-hidden="true">{p.n}</span>
+            <div>
+              <p class="mono">{p.year} · {p.kind}</p>
+              <h3 class="d d3 more__t">{p.title}</h3>
+              <p class="prose more__s">{p.summary}</p>
+              {p.facts && (
+                <dl class="facts facts--slim">
+                  {p.facts.map((f) => (<div><dt class="mono">{f.k}</dt><dd class="d4">{f.v}</dd></div>))}
+                </dl>
+              )}
+              <ul class="chips">{p.stack.map((s) => (<li>{s}</li>))}</ul>
+              <p class="outs">
+                {p.links?.map((l) => (
+                  <a class="out" href={l.href} target="_blank" rel="noopener noreferrer">{l.label} <span aria-hidden="true">↗</span></a>
+                ))}
+                {p.note && <span class="mono">{p.note}</span>}
+              </p>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <div class="arc in">
+        <p class="mono arc__cap">Earlier</p>
+        <ul>
+          {archive.map((a) => (
+            <li>
+              {a.href
+                ? <a class="arc__r" href={a.href} target="_blank" rel="noopener noreferrer">
+                    <span class="arc__t">{a.title}</span><span class="arc__d">{a.desc}</span>
+                    <span class="mono arc__m">{a.meta} ↗</span></a>
+                : <div class="arc__r">
+                    <span class="arc__t">{a.title}</span><span class="arc__d">{a.desc}</span>
+                    <span class="mono arc__m">{a.meta}</span></div>}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ PRACTICE ══════════ -->
+  <section class="chapter" id="practice">
+    <div class="wrap hang">
+      <div class="hang__label">
+        <span class="mono mono--ink">Practice</span>
+        <span class="mono">How the work gets made</span>
+      </div>
+      <div>
+        <h2 class="d d2 in prac__h">The rule is the thing. Everything else is where you put it.</h2>
+        <div class="prac__cols">
+          <div class="prose in" style="--d:.06s">
+            <p>
+              For three years at Matrix I held two jobs at once — writing Java
+              that automated grading, attendance and student records, and
+              coordinating academic operations across five departments. The
+              second job taught me what the first one was for. Scheduling,
+              curriculum, reporting: all of it was rules somebody had to hold in
+              their head, and the software either held them instead or it was
+              decoration.
+            </p>
+            <p>
+              So I build backends the same way now. Find the rule the system has
+              to guarantee. Put it in exactly one place, on the service layer,
+              where no second controller can quietly route around it. Then write
+              the tests that prove it holds — a habit I picked up at Rogersoft,
+              automating regression suites and wiring them into CI until
+              feedback that took days took under two hours.
+            </p>
+          </div>
+          <div class="prose in" style="--d:.14s">
+            <p>
+              The research half of my master's pulled in the opposite direction
+              and taught me more than I expected. An agent-based model has no
+              central authority at all. You give a few hundred agents their local
+              rules — how fast they move, how well they know the room, when they
+              panic — and the thing you actually care about, how long a lecture
+              hall takes to empty, is written nowhere. It emerges. You run it
+              nine thousand times and read the distribution.
+            </p>
+            <p>
+              Both halves make the same argument from different ends: <strong>be
+              precise about the rules and honest about what you cannot
+              predict.</strong> It is why I would rather ship a service that
+              refuses a bad write than one that accepts it and hopes.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ TRAJECTORY ══════════ -->
+  <section class="chapter" id="trajectory">
+    <div class="wrap hang">
+      <div class="hang__label">
+        <span class="mono mono--ink">Trajectory</span>
+        <span class="mono">2011 — 2025</span>
+      </div>
+      <div class="traj">
+        {trajectory.map((e) => (
+          <article class={`leg in ${e.kind === 'study' ? 'leg--study' : ''}`}>
+            <div class="leg__yr">
+              <span class="mono mono--ink">{e.from}{e.to !== e.from ? `—${e.to}` : ''}</span>
+              <span class="mono">{e.kind === 'study' ? 'Study' : 'Professional'}</span>
+            </div>
+            <div>
+              <h3 class="d d4 leg__r">{e.role}</h3>
+              <p class="mono leg__o">{e.org}</p>
+              {e.points && <ul class="leg__p">{e.points.map((pt) => (<li>{pt}</li>))}</ul>}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ INSTRUMENTS — ink register ══════════ -->
+  <section class="chapter dark" id="instruments">
+    <div class="wrap hang">
+      <div class="hang__label">
+        <span class="mono mono--ink">Instruments</span>
+        <span class="mono">What the work is made with</span>
+      </div>
+      <dl class="kit">
+        {instruments.map((it) => (
+          <div class="kit__r in">
+            <dt><span class="d4">{it.k}</span>{it.note && <span class="kit__n">{it.note}</span>}</dt>
+            <dd>{it.v}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <!-- ══════════ CONTACT ══════════ -->
+  <section class="chapter after-dark con" id="contact">
+    <div class="wrap hang">
+      <div class="hang__label">
+        <span class="mono mono--ink">Contact</span>
+      </div>
+      <div>
+        <h2 class="d d1 con__h">
+          <span class="slot"><span>Always glad to talk</span></span>
+          <span class="slot" style="--d:.09s"><span>about systems.</span></span>
+        </h2>
+        <p class="prose con__s in" style="--d:.18s">
+          Scheduling, simulation, testing, or the parts of a Java service nobody
+          enjoys until they go wrong — if any of that is on your mind, write to me.
+        </p>
+
+        <ul class="wires in" style="--d:.26s">
+          {links.map((l) => (
+            <li>
+              <a class="wire" href={l.href}
+                 target={l.ext ? '_blank' : undefined}
+                 rel={l.ext ? 'noopener noreferrer me' : undefined}
+                 download={l.dl ? true : undefined}>
+                <span class="mono wire__k">{l.k}</span>
+                <span class="d3 wire__v">{l.v}</span>
+                <span class="wire__g" aria-hidden="true">{l.go}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+/* ── Opening ─────────────────────────────────── */
+.open { padding-block: clamp(2.5rem, 7vh, 5rem) clamp(2rem, 5vh, 3.5rem); }
+.open__meta { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-bottom: clamp(1.5rem, 4vh, 2.75rem); }
+.open__h { max-width: 15ch; margin-bottom: clamp(2rem, 5vh, 3.25rem); }
+.open__h .slot:nth-child(2) > *, .open__h .slot:nth-child(4) > * { color: var(--ink-3); }
+.open__foot { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: clamp(1.5rem, 4vw, 4rem); align-items: end; }
+.open__acts { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+
+.act {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  font-family: var(--mono); font-size: 0.7rem; font-weight: 500;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 0.8rem 1.15rem; border: 1px solid var(--rule);
+  transition: background var(--fast), color var(--fast), border-color var(--fast);
+}
+.act:hover { border-color: var(--ink); }
+.act--fill { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.act--fill:hover { background: var(--claret); border-color: var(--claret); color: #fff; }
+
+.open__hr { margin-top: clamp(2rem, 4vh, 3rem); }
+.hr { display: block; height: 2px; background: var(--ink); }
+
+/* ── Work, ink register ──────────────────────── */
+.work__h { max-width: 20ch; margin-bottom: clamp(2rem, 5vw, 4rem); }
+
+.lead + .lead { margin-top: clamp(3rem, 7vw, 6rem); }
+.lead__rule { height: 1px; background: var(--rule-d); margin-bottom: clamp(1.5rem, 3vw, 2.5rem); }
+.lead__top { display: flex; align-items: flex-start; gap: clamp(1rem, 3vw, 3rem); }
+
+/* The numeral is the artwork — no imagery anywhere on this site. */
+.lead__n {
+  font-family: var(--display); font-weight: 200; font-stretch: 75%;
+  font-size: clamp(3.5rem, 11vw, 10rem); line-height: 0.8;
+  letter-spacing: -0.05em; color: var(--claret); flex: none;
+  opacity: 0.9;
+}
+.lead__t { margin: 0.35rem 0 0.6rem; max-width: 17ch; }
+.lead__track { display: inline-flex; align-items: center; gap: 0.5rem; }
+.dot { width: 7px; height: 7px; background: var(--claret); flex: none; }
+
+.lead__grid { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: clamp(1.5rem, 4vw, 4rem); margin-top: clamp(1.75rem, 3.5vw, 2.75rem); align-items: start; }
+.lead__sum { color: var(--ink); max-width: 42ch; }
+
+.pao { display: grid; gap: 1.25rem; }
+.pao > div { border-top: 1px solid var(--rule); padding-top: 0.75rem; }
+.pao > div:last-child { border-top-color: var(--claret); }
+.pao .mono { margin-bottom: 0.4rem; }
+.pao p:last-child { color: var(--ink-2); font-size: 0.96rem; max-width: 52ch; }
+
+.facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.15rem 2rem; margin-top: clamp(1.5rem, 2.5vw, 2rem); padding-top: 1.25rem; border-top: 1px solid var(--rule); }
+.facts dt { margin-bottom: 0.3rem; }
+.facts--slim { display: flex; flex-wrap: wrap; gap: 0.85rem 2rem; margin-top: 1.15rem; padding-top: 0.9rem; }
+
+.lead__role { margin-top: 1.5rem; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: clamp(1.75rem, 3vw, 2.5rem); padding-top: 1.25rem; border-top: 1px solid var(--rule); }
+.chips li { font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.04em; color: var(--ink-2); border: 1px solid var(--rule); padding: 0.22rem 0.5rem; }
+
+.outs { display: flex; flex-wrap: wrap; gap: 1.4rem; margin-top: 1.6rem; align-items: center; }
+.out { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.05em; border-bottom: 1px solid var(--rule); padding-bottom: 2px; transition: color var(--fast), border-color var(--fast); }
+.out:hover { color: var(--claret); border-color: var(--claret); }
+
+/* ── More work, paper register ───────────────── */
+.mores { display: grid; gap: clamp(2rem, 4vw, 3.5rem); }
+.more { display: grid; grid-template-columns: clamp(3rem, 7vw, 7rem) minmax(0, 1fr); gap: clamp(1rem, 2.5vw, 2.5rem); padding-top: clamp(1.5rem, 3vw, 2.25rem); border-top: 1px solid var(--rule); }
+.more__n { font-family: var(--display); font-weight: 200; font-stretch: 75%; font-size: clamp(2rem, 4.5vw, 3.6rem); line-height: 0.85; letter-spacing: -0.04em; color: var(--claret); }
+.more__t { margin: 0.3rem 0 0.6rem; }
+.more__s { font-size: 0.98rem; }
+
+.arc { margin-top: clamp(2.5rem, 6vw, 5rem); border-top: 2px solid var(--ink); }
+.arc__cap { padding-block: 0.85rem; border-bottom: 1px solid var(--rule-2); }
+.arc__r { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 2fr) auto; gap: 1.5rem; align-items: baseline; padding-block: 1.05rem; border-bottom: 1px solid var(--rule-2); transition: padding-left var(--mid) var(--ease); }
+a.arc__r:hover { padding-left: 0.75rem; }
+.arc__t { font-family: var(--display); font-weight: 600; font-stretch: 88%; font-size: 1rem; }
+.arc__d { color: var(--ink-2); font-size: 0.92rem; }
+a.arc__r:hover .arc__m { color: var(--claret); }
+
+/* ── Practice ────────────────────────────────── */
+.prac__h { max-width: 19ch; margin-bottom: clamp(1.5rem, 3vw, 2.5rem); }
+.prac__cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(1.5rem, 3.5vw, 3.5rem); }
+
+/* ── Trajectory ──────────────────────────────── */
+.traj { border-top: 2px solid var(--ink); }
+.leg { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr); gap: clamp(1rem, 2.5vw, 2.5rem); padding-block: clamp(1.35rem, 2.75vw, 2rem); border-bottom: 1px solid var(--rule-2); }
+.leg__yr { display: flex; flex-direction: column; gap: 0.35rem; }
+.leg--study .leg__yr .mono:last-child { color: var(--claret); }
+.leg__r { margin-bottom: 0.25rem; }
+.leg__o { margin-bottom: 0.8rem; text-transform: none; letter-spacing: 0.04em; }
+.leg__p { display: grid; gap: 0.5rem; }
+.leg__p li { position: relative; padding-left: 1.05rem; color: var(--ink-2); font-size: 0.95rem; }
+.leg__p li::before { content: ''; position: absolute; left: 0; top: 0.66em; width: 7px; height: 1px; background: var(--claret); }
+
+/* ── Instruments ─────────────────────────────── */
+.kit { border-top: 2px solid var(--on-dark); }
+.kit__r { display: grid; grid-template-columns: 14rem minmax(0, 1fr); gap: clamp(0.75rem, 2.5vw, 2.5rem); padding-block: 1.2rem; border-bottom: 1px solid var(--rule); }
+.kit__n { display: block; margin-top: 0.3rem; font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+.kit__r dd { color: var(--ink-2); font-size: 0.98rem; line-height: 1.65; }
+
+/* ── Contact ─────────────────────────────────── */
+.con { padding-bottom: clamp(3.5rem, 8vw, 6.5rem); }
+.con__h { max-width: 13ch; margin-bottom: 1.35rem; }
+.con__h .slot:last-child > * { color: var(--claret); }
+.con__s { margin-bottom: clamp(2rem, 4vw, 3rem); }
+.wires { border-top: 2px solid var(--ink); }
+.wire { display: grid; grid-template-columns: 6rem minmax(0, 1fr) auto; gap: 1.1rem; align-items: center; padding-block: 1.1rem; border-bottom: 1px solid var(--rule-2); transition: padding-left var(--mid) var(--ease); }
+.wire:hover { padding-left: 0.8rem; }
+.wire__v { overflow-wrap: anywhere; transition: color var(--fast); }
+.wire:hover .wire__v { color: var(--claret); }
+.wire__g { font-family: var(--mono); color: var(--ink-3); transition: transform var(--fast) var(--ease), color var(--fast); }
+.wire:hover .wire__g { color: var(--claret); transform: translateX(4px); }
+
+/* ── Responsive ──────────────────────────────── */
+@media (max-width: 1080px) {
+  .lead__grid { grid-template-columns: minmax(0, 1fr); }
+  .open__foot { grid-template-columns: minmax(0, 1fr); align-items: start; }
+}
+@media (max-width: 900px) {
+  .prac__cols { grid-template-columns: minmax(0, 1fr); }
+  .kit__r { grid-template-columns: minmax(0, 1fr); gap: 0.4rem; }
+  .leg { grid-template-columns: minmax(0, 1fr); gap: 0.7rem; }
+  .leg__yr { flex-direction: row; align-items: baseline; gap: 0.8rem; }
+  .lead__top { flex-direction: column; gap: 0.25rem; }
+  .lead__n { line-height: 1; }
+}
+@media (max-width: 620px) {
+  .more { grid-template-columns: minmax(0, 1fr); gap: 0.35rem; }
+  .arc__r { grid-template-columns: minmax(0, 1fr); gap: 0.25rem; }
+  .wire { grid-template-columns: minmax(0, 1fr) auto; }
+  .wire__k { grid-column: 1 / -1; }
+  .act { flex: 1 1 auto; justify-content: center; }
+}
+</style>

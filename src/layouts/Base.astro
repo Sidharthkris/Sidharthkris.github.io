@@ -1,0 +1,247 @@
+---
+import '../styles/global.css';
+import { profile, sections } from '../data/content';
+
+interface Props { title: string; description: string; }
+const { title, description } = Astro.props;
+
+/* No postal address and no language list — deliberately omitted. */
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: profile.name,
+  givenName: 'Sidharth',
+  familyName: 'Vijayan Krishnan',
+  jobTitle: 'Software Engineer',
+  url: profile.site,
+  email: `mailto:${profile.email}`,
+  image: `${profile.site}og.png`,
+  description,
+  sameAs: [profile.github, profile.linkedin],
+  alumniOf: [
+    { '@type': 'CollegeOrUniversity', name: 'Technische Universität Clausthal' },
+    { '@type': 'CollegeOrUniversity', name: 'Mar Baselios Institute of Technology and Science' },
+  ],
+  knowsAbout: ['Java', 'Spring Boot', 'REST APIs', 'React', 'TypeScript', 'PostgreSQL',
+    'Docker', 'Test automation', 'Agent-based modelling', 'Multi-agent systems'],
+};
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={profile.site} />
+  <meta name="theme-color" content="#efebe3" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+  <meta property="og:type" content="profile" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={profile.site} />
+  <meta property="og:image" content={`${profile.site}og.png`} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content={`${profile.name} — Software Engineer`} />
+  <meta property="og:site_name" content={profile.name} />
+  <meta property="og:locale" content="en_GB" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={`${profile.site}og.png`} />
+
+  <link rel="preload" href="/fonts/Bricolage.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/fonts/InstrumentSans.woff2" as="font" type="font/woff2" crossorigin />
+
+  <script is:inline>document.documentElement.classList.add('js');</script>
+  <set:html value={`<script type="application/ld+json">${JSON.stringify(person)}</script>`} />
+</head>
+
+<body>
+  <a href="#main" class="skip">Skip to content</a>
+
+  <header class="head" id="head">
+    <div class="wrap head__in">
+      <a href="#top" class="sig" aria-label={`${profile.name} — top of page`}>
+        <span class="sig__n">SVK</span>
+        <span class="sig__full">{profile.name}</span>
+      </a>
+
+      <nav class="tabs" aria-label="Sections">
+        {sections.map((s) => (
+          <a href={`#${s.id}`} class="tabs__a" data-nav={s.id}>{s.label}</a>
+        ))}
+      </nav>
+
+      <button class="hamb" id="hamb" type="button" aria-expanded="false" aria-controls="overlay">
+        <span class="sr-only">Open menu</span>
+        <span aria-hidden="true"></span><span aria-hidden="true"></span>
+      </button>
+    </div>
+  </header>
+
+  <div class="overlay dark" id="overlay" role="dialog" aria-modal="true" aria-label="Sections" hidden>
+    <button class="overlay__x" id="overlayX" type="button">
+      <span class="sr-only">Close menu</span><span aria-hidden="true">×</span>
+    </button>
+    <nav class="overlay__nav" aria-label="Sections">
+      {sections.map((s, i) => (
+        <a class="overlay__a" href={`#${s.id}`}>
+          <span class="mono" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+          <span class="d2">{s.label}</span>
+        </a>
+      ))}
+    </nav>
+    <a class="overlay__mail mono" href={`mailto:${profile.email}`}>{profile.email}</a>
+  </div>
+
+  <main id="main"><span id="top"></span><slot /></main>
+
+  <footer class="colo dark">
+    <div class="wrap colo__in">
+      <p class="mono">© <span id="yr">2026</span> {profile.name}</p>
+      <p class="mono">Astro · Bricolage Grotesque, Instrument Sans, Azeret Mono</p>
+      <p><a class="mono colo__top" href="#top">Top ↑</a></p>
+    </div>
+  </footer>
+
+  <script>
+    const ov = document.getElementById('overlay')!;
+    const hb = document.getElementById('hamb')!;
+    const xb = document.getElementById('overlayX')!;
+    let open = false;
+    let prev: Element | null = null;
+
+    const set = (on: boolean) => {
+      if (open === on) return;
+      open = on;
+      ov.hidden = !on;
+      hb.setAttribute('aria-expanded', String(on));
+      document.body.classList.toggle('fixed', on);
+      if (on) { prev = document.activeElement; (xb as HTMLElement).focus(); }
+      else { (prev instanceof HTMLElement ? prev : hb).focus(); }
+    };
+
+    hb.addEventListener('click', () => set(true));
+    xb.addEventListener('click', () => set(false));
+    ov.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => set(false)));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && open) { e.preventDefault(); set(false); }
+      if (e.key !== 'Tab' || !open) return;
+      const f = [...ov.querySelectorAll<HTMLElement>('a[href], button')];
+      const a = f[0], z = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); }
+      else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); }
+    });
+    matchMedia('(min-width: 941px)').addEventListener('change', (e) => e.matches && set(false));
+
+    const head = document.getElementById('head')!;
+    let t = false;
+    addEventListener('scroll', () => {
+      if (t) return;
+      t = true;
+      requestAnimationFrame(() => { head.classList.toggle('on', scrollY > 20); t = false; });
+    }, { passive: true });
+
+    // The masthead sits on both registers, so it has to know which one
+    // is under it or the wordmark disappears against the ink panels.
+    const navs = new Map<string, Element>();
+    document.querySelectorAll('[data-nav]').forEach((l) => navs.set(l.getAttribute('data-nav')!, l));
+    document.querySelectorAll('main section[id]').forEach((s) =>
+      new IntersectionObserver((es) => es.forEach((e) => {
+        if (!e.isIntersecting) return;
+        const el = e.target as HTMLElement;
+        head.classList.toggle('over-dark', el.classList.contains('dark'));
+        navs.forEach((l, id) => {
+          const on = id === el.id;
+          l.classList.toggle('here', on);
+          on ? l.setAttribute('aria-current', 'true') : l.removeAttribute('aria-current');
+        });
+      }), { rootMargin: '-20% 0px -70% 0px' }).observe(s));
+
+    const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const items = document.querySelectorAll('.in, .slot, .wipe');
+    if (calm) { items.forEach((el) => el.classList.add('go')); }
+    else {
+      const io = new IntersectionObserver((es, obs) => es.forEach((e) => {
+        if (!e.isIntersecting) return;
+        e.target.classList.add('go');
+        obs.unobserve(e.target);
+      }), { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+      items.forEach((el) => io.observe(el));
+    }
+    setTimeout(() => items.forEach((el) => el.classList.add('go')), 2600);
+
+    const yr = document.getElementById('yr');
+    if (yr) yr.textContent = String(new Date().getFullYear());
+  </script>
+</body>
+</html>
+
+<style is:global>
+  .skip {
+    position: fixed; top: 1rem; left: 1rem; z-index: 999;
+    background: var(--claret); color: #fff; font-family: var(--mono);
+    font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 0.7rem 1.1rem; transform: translateY(-300%);
+    transition: transform var(--fast) var(--ease);
+  }
+  .skip:focus { transform: none; }
+
+  .head {
+    position: sticky; top: 0; z-index: 100;
+    border-bottom: 1px solid transparent;
+    transition: background-color var(--fast), border-color var(--fast), color var(--fast);
+  }
+  .head.on { background: color-mix(in srgb, #efebe3 88%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom-color: #c9c3b5; }
+  .head.on.over-dark { background: color-mix(in srgb, #191817 88%, transparent); border-bottom-color: #35322e; color: #efebe3; }
+  .head__in { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; height: 62px; }
+
+  .sig { display: inline-flex; align-items: baseline; gap: 0.6rem; min-width: 0; }
+  .sig__n {
+    font-family: var(--mono); font-weight: 700; font-size: 0.8rem;
+    letter-spacing: 0.06em; color: #8e2740;
+    border: 1px solid currentColor; padding: 0.15rem 0.35rem;
+  }
+  .head.over-dark .sig__n { color: #d9748c; }
+  .sig__full { font-family: var(--display); font-weight: 600; font-stretch: 88%; font-size: 0.9rem; letter-spacing: -0.015em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .tabs { display: flex; align-items: center; gap: clamp(0.8rem, 1.9vw, 1.9rem); }
+  .tabs__a {
+    font-family: var(--mono); font-size: 0.68rem; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.74;
+    padding-block: 0.4rem; position: relative; transition: opacity var(--fast);
+  }
+  .tabs__a::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
+    background: #8e2740; transform: scaleX(0); transform-origin: left;
+    transition: transform var(--mid) var(--ease);
+  }
+  .head.over-dark .tabs__a::after { background: #d9748c; }
+  .tabs__a:hover, .tabs__a.here { opacity: 1; }
+  .tabs__a:hover::after, .tabs__a.here::after { transform: scaleX(1); }
+
+  .hamb { display: none; width: 40px; height: 40px; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
+  .hamb span[aria-hidden] { width: 20px; height: 1.5px; background: currentColor; }
+
+  .overlay { position: fixed; inset: 0; z-index: 200; display: flex; flex-direction: column; justify-content: center; padding: var(--pad); }
+  .overlay[hidden] { display: none; }
+  .overlay__x { position: absolute; top: 0.7rem; right: var(--pad); font-size: 2.2rem; line-height: 1; }
+  .overlay__a { display: flex; align-items: baseline; gap: 1.1rem; padding-block: 0.7rem; border-bottom: 1px solid var(--rule-d); }
+  .overlay__mail { margin-top: 2rem; color: var(--claret-l); text-transform: none; letter-spacing: 0.04em; }
+  body.fixed { overflow: hidden; }
+
+  .colo { padding-block: 2.25rem; }
+  .colo__in { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: center; }
+  .colo__top { border-bottom: 1px solid var(--rule-d); padding-bottom: 2px; }
+  .colo__top:hover { color: var(--claret-l); border-color: var(--claret-l); }
+
+  @media (max-width: 940px) {
+    .tabs { display: none; }
+    .hamb { display: flex; }
+    .sig__full { display: none; }
+  }
+</style>
